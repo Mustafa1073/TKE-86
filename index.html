@@ -1,0 +1,545 @@
+<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name=theme-color content="#021834"><link rel=manifest href=manifest.webmanifest><link rel=icon href=icons/favicon.ico sizes="16x16 32x32 48x48"><link rel=icon type=image/png sizes=32x32 href=icons/favicon-32.png><link rel=icon type=image/png sizes=16x16 href=icons/favicon-16.png><link rel=icon type=image/png sizes=192x192 href=icons/icon-192.png><link rel=apple-touch-icon href=icons/apple-touch-icon.png><link rel=apple-touch-icon sizes=120x120 href=icons/apple-touch-icon-120.png><link rel=apple-touch-icon sizes=152x152 href=icons/apple-touch-icon-152.png><link rel=apple-touch-icon sizes=167x167 href=icons/apple-touch-icon-167.png><link rel=apple-touch-icon sizes=180x180 href=icons/apple-touch-icon-180.png><meta name=mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-title content="TKE 8086"><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><style>#tin[hidden]{display:none}#tke-splash{display:none}
+@media (display-mode:standalone),(display-mode:fullscreen),(display-mode:minimal-ui){
+#tke-splash{--u:min(100vw,62vh);position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*.085);background:radial-gradient(circle at 50% 42%,#0b3a7a4d,transparent calc(var(--u)*.95)),#021834;animation:tkeOut .45s ease 1.45s forwards}
+#tke-splash img{display:block}
+#tke-splash .ic{width:calc(var(--u)*.4);height:calc(var(--u)*.4);filter:drop-shadow(0 0 calc(var(--u)*.05) #1e90ff8c)}
+#tke-splash .tt{width:calc(var(--u)*.8756);height:auto}
+html.tke-nosplash #tke-splash{display:none}}
+@keyframes tkeOut{to{opacity:0;visibility:hidden}}</style>
+<link rel=apple-touch-startup-image media="screen and (device-width:440px) and (device-height:956px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1320x2868.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:420px) and (device-height:912px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1260x2736.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:402px) and (device-height:874px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1206x2622.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:430px) and (device-height:932px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1290x2796.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1179x2556.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1284x2778.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1170x2532.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:375px) and (device-height:812px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1125x2436.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1242x2688.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/iphone-828x1792.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:414px) and (device-height:736px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)" href=splash/iphone-1242x2208.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/iphone-750x1334.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:1032px) and (device-height:1376px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-2064x2752.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:1032px) and (device-height:1376px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2752x2064.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:1024px) and (device-height:1366px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-2048x2732.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:1024px) and (device-height:1366px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2732x2048.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:834px) and (device-height:1194px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1668x2388.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:834px) and (device-height:1194px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2388x1668.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:834px) and (device-height:1112px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1668x2224.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:834px) and (device-height:1112px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2224x1668.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:820px) and (device-height:1180px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1640x2360.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:820px) and (device-height:1180px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2360x1640.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:810px) and (device-height:1080px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1620x2160.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:810px) and (device-height:1080px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2160x1620.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:768px) and (device-height:1024px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1536x2048.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:768px) and (device-height:1024px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2048x1536.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:744px) and (device-height:1133px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)" href=splash/ipad-1488x2266.png>
+<link rel=apple-touch-startup-image media="screen and (device-width:744px) and (device-height:1133px) and (-webkit-device-pixel-ratio:2) and (orientation:landscape)" href=splash/ipad-2266x1488.png>
+<script>try{if(localStorage.getItem("m86t")=="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script><script>try{if(sessionStorage.getItem("tke-sp"))document.documentElement.classList.add("tke-nosplash");else sessionStorage.setItem("tke-sp","1")}catch(e){}</script>
+<title>TKE 8086</title>
+<link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&display=swap">
+<style>
+:root{--bg:#0a0e13;--fg:#e6efe9;--cd:rgba(255,255,255,.045);--bd:rgba(255,255,255,.1);--am:#ffb13b;--gn:#3dff8b;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(900px 500px at 15% -10%,#14402a66,transparent),radial-gradient(#ffffff14 1px,transparent 1.5px) 0 0/18px 18px,var(--bg)}
+main{max-width:1120px;margin:auto;padding:14px;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));align-items:start}
+.kit{position:relative;border-radius:24px;padding:18px 16px 16px;color:#e9ffef;border:1px solid #ffffff2e;
+background:repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 22px),linear-gradient(160deg,#137d41,#093f22);
+box-shadow:0 20px 50px #000a,inset 0 1px 0 #ffffff33,inset 0 0 0 6px #0000002e}
+h1{font:600 12px var(--mono);margin:2px 2px 14px;padding:0 0 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;border-bottom:1px solid #ffffff2e}
+h1 .mk{white-space:nowrap;font:800 clamp(20px,6.6vw,27px)/1.05 "Sora","Segoe UI",system-ui,sans-serif;letter-spacing:.02em;color:#f2fff6;text-shadow:0 1px 0 #0006}
+h1 .hz{font:700 12px/1 var(--mono);letter-spacing:.06em;padding:5px 12px;border:1px solid #ffffff66;border-radius:99px;background:#0000002e;white-space:nowrap}
+h1 .cp{grid-column:1/-1;font:600 clamp(10.5px,3.35vw,13px)/1.3 var(--mono);letter-spacing:.06em;color:#e9ffefd9}
+#dsp{position:relative;display:flex;gap:3px;background:linear-gradient(#0c0303,#1c0707);padding:12px 10px;border-radius:10px;border:1px solid #000;box-shadow:inset 0 2px 10px #000,0 1px 0 #ffffff33}
+#dsp::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#00000040 2px 3px)}
+#dsp svg{flex:1;min-width:0;height:48px}#dsp svg:nth-child(5){margin-left:10px}
+#dsp rect,#dsp circle{fill:#2b0f0e;transition:fill .08s}#dsp rect.on,#dsp circle.on{fill:#ff4a3d;filter:drop-shadow(0 0 3px #ff2a1a)}
+.lb{display:flex;font:10px var(--mono);margin:5px 0 8px;opacity:.8}.lb span{flex:1;text-align:center}
+#stat{white-space:pre-line;font:12px/1.45 var(--mono);background:#04100a;color:#2fbf6c;text-shadow:0 0 6px #3dff8b88;padding:8px 10px;border-radius:8px;min-height:4.6em;border:1px solid #000;box-shadow:inset 0 0 14px #000}
+#led{display:flex;gap:8px;justify-content:flex-end;margin:10px 2px}
+#led i{width:12px;height:12px;border-radius:50%;background:#3a0f0f;box-shadow:inset 0 1px 2px #000,0 0 0 2px #0004}
+#led i.on{background:#ff4a3d;box-shadow:0 0 10px 2px #ff2a1a}
+.keys{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:4px}
+.keys button{height:54px;border:0;border-radius:10px;color:#fff;font:700 11px/1.15 system-ui,sans-serif;cursor:pointer;padding:2px;touch-action:manipulation;transition:transform .06s,box-shadow .06s,filter .12s}
+.b{background:linear-gradient(#3b82f6,#1f56c9);box-shadow:0 4px 0 #0f2f7a,0 7px 10px #0006,inset 0 1px 0 #ffffff55}
+.k{background:linear-gradient(#34343b,#1b1b20);box-shadow:0 4px 0 #050507,0 7px 10px #0006,inset 0 1px 0 #ffffff2a}
+.keys button:hover{filter:brightness(1.12)}
+.keys button:active{transform:translateY(3px);box-shadow:0 1px 0 #0008,inset 0 1px 0 #ffffff22}
+.keys button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
+.k b{display:block;font:700 17px var(--mono)}.k small{font-size:8.5px;opacity:.8}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:12px 14px;margin-bottom:14px;backdrop-filter:blur(6px);box-shadow:0 10px 30px #0005}
+.card>b,.hd>b{display:flex;align-items:center;gap:8px;margin-bottom:8px;font:600 13px system-ui}
+.card>b::before,.hd>b::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gn);box-shadow:0 0 8px var(--gn)}
+#regs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:4px 10px;font:12px var(--mono)}#regs b{color:var(--am);text-shadow:0 0 6px #ffb13b55}
+#fl{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px;font:11px var(--mono)}
+#fl span{padding:2px 7px;border-radius:5px;border:1px solid var(--bd);opacity:.45}#fl .on{opacity:1;background:#14803f;color:#eaffef;border-color:#3dff8b88;box-shadow:0 0 8px #3dff8b44}
+#mem{font:11px/1.6 var(--mono);overflow-x:auto;margin:0;padding:0 14px 12px;color:#b9c9bf}#mem b{background:var(--am);color:#1a1100;border-radius:3px;padding:0 2px}
+textarea,input{font:12px var(--mono);background:#05080c;color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%;margin:4px 0}
+textarea:focus,input:focus{outline:2px solid #ffb13b88;outline-offset:1px}
+.t{font:600 12px system-ui;padding:8px 14px;border-radius:8px;border:1px solid var(--bd);background:linear-gradient(#ffffff14,#ffffff06);color:var(--fg);cursor:pointer;transition:background .12s}
+.t:hover{background:#ffffff22}.t:active{transform:translateY(1px)}.t:focus-visible{outline:2px solid var(--am)}
+.card p{font-size:12px;opacity:.75;margin:10px 0 0}
+.asm{grid-column:1/-1;margin:0}
+.hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}.hd>b{margin:0}
+.ed{display:flex;height:min(56vh,380px);border:1px solid #000;border-radius:10px;overflow:hidden;background:#05080c;box-shadow:inset 0 0 18px #000}
+.ed:focus-within{border-color:#ffb13b88;box-shadow:inset 0 0 18px #000,0 0 0 2px #ffb13b33}
+#ln{margin:0;min-width:3.2em;padding:12px 10px 26px;text-align:right;color:#ffb13b66;background:#0a0f14;border-right:1px solid var(--bd);font:13px/1.6 var(--mono);overflow:hidden;user-select:none}
+#asm{flex:1;min-width:0;margin:0;border:0;border-radius:0;background:transparent;color:var(--am);caret-color:var(--am);text-shadow:0 0 6px #ffb13b40;font:13px/1.6 var(--mono);padding:12px;white-space:pre;overflow:auto;resize:none;tab-size:8;outline:none}
+#asm::placeholder{color:#ffb13b55}#asi{font-family:var(--mono)}
+@media(max-width:480px){.keys{gap:5px}.keys button{height:50px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.lw{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 2px 10px}
+#led{margin:0}#lh{font:11px var(--mono);opacity:.85;white-space:nowrap}
+.t.p{background:linear-gradient(#ffb13b,#e08a12);color:#1a1100;border-color:#ffb13b}.t.p:hover{filter:brightness(1.1);background:linear-gradient(#ffb13b,#e08a12)}
+#alst{margin:10px 0 0;padding:10px 12px;max-height:240px;overflow:auto;background:#05080c;border:1px solid var(--bd);border-radius:10px;font:12px/1.6 var(--mono);color:#b9c9bf;white-space:pre}
+#alst .e{color:#ff7a70}#alst .h{color:var(--gn)}
+#led i{position:relative}
+#led i.on{background:#3a0f0f;box-shadow:inset 0 1px 2px #000,0 0 0 2px #0004}
+#led i::after{content:"";position:absolute;inset:0;border-radius:50%;background:#ff4a3d;box-shadow:0 0 10px 2px #ff2a1a;opacity:var(--d,0)}
+#led i::before{content:attr(data-b);position:absolute;top:17px;left:50%;transform:translateX(-50%);font:8px var(--mono);color:#e9ffef;opacity:.65}
+.lw{margin:12px 2px 22px}
+.by{margin:12px 2px 0;text-align:right;font:600 10.5px/1.2 "Sora","Segoe UI",system-ui,sans-serif;letter-spacing:.03em;color:#6cf0ff;opacity:.9;text-shadow:0 0 8px #6cf0ff55}
+.gd{padding:0}
+.gd summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font:600 13px system-ui;padding:12px 14px}
+.gd summary::-webkit-details-marker{display:none}
+.gd summary::after{content:"+";margin-left:auto;font:700 16px var(--mono);opacity:.7}
+.gd[open]>summary::after,.gd details[open]>summary::after{content:"\2212"}
+.gd>summary::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gn);box-shadow:0 0 8px var(--gn)}
+.gd summary:focus-visible{outline:2px solid var(--am);outline-offset:-2px;border-radius:12px}
+.gd details{border-top:1px solid var(--bd)}
+.gd details summary{padding:10px 14px;font-weight:500;font-size:12.5px}
+.gd details>div{padding:0 14px 12px;font-size:12px;line-height:1.6;color:#cfdad3}
+.gd ol,.gd ul{margin:0 0 6px;padding-left:18px}
+.gd li{margin:4px 0}
+.gd kbd{font:700 10.5px var(--mono);padding:1px 6px;border-radius:5px;border:1px solid var(--bd);background:#ffffff14;color:var(--fg)}
+#stat::first-line{color:var(--gn);font-weight:700}
+.dc{padding:0 14px 12px}
+.ab{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.lg{grid-column:1/-1;margin:0}
+aside>.card:last-child{margin-bottom:0}
+
+/* ===== UI REFRESH V1.3 (visual only; 7-seg display rules above are untouched) ===== */
+:root{--bg:#070b16;--fg:#e4ecfa;--cd:rgba(16,27,58,.6);--bd:rgba(92,140,255,.22);--am:#6fb8ff;--gn:#35e08a;--cy:#5cd6ff}
+body{background:radial-gradient(800px 420px at 12% -8%,#1b2c7055,transparent),radial-gradient(700px 400px at 100% 0,#34187233,transparent),var(--bg)}
+.kit{border-radius:26px;color:#e4ecfa;border:1px solid #3c63d066;background:linear-gradient(160deg,#0f1a3a,#0a1128 55%,#0c0f26);box-shadow:0 18px 44px #000b,inset 0 1px 0 #6f9bff2e,inset 0 0 40px #2a4bd01a}
+.kit::before{content:"";position:absolute;inset:6px;border-radius:20px;border:1px solid #4d7cff30;pointer-events:none}
+.kit::after{content:"";position:absolute;top:0;left:22%;right:22%;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#5c7cff,#9a5cff,transparent);pointer-events:none}
+h1{border-bottom:1px solid #4d7cff40}
+h1 .mk{color:#e8f3ff;text-shadow:none}
+h1 .hz{color:#a9d4ff;border:1px solid #4d7cff88;border-radius:12px;background:#0a1430}
+h1 .cp{color:#8fb4e8;letter-spacing:.14em}
+.lb{color:#8fb4e8;letter-spacing:.12em;opacity:1}
+#stat{background:radial-gradient(circle at 16px 19px,#6fb8ff 0 4px,#6fb8ff44 5px 7px,transparent 8px),linear-gradient(#0a1530,#091024);border:1px solid #3c63d066;border-radius:12px;color:#7fb6e8;text-shadow:none;padding:10px 12px 10px 34px;box-shadow:inset 0 1px 0 #6f9bff26}
+#stat::first-line{color:#c4f1ff;font-weight:700}
+#lh{color:#7fd6ff;opacity:1}
+#led i,#led i.on{background:radial-gradient(circle at 35% 30%,#4b2a33,#1f0e14 70%);box-shadow:inset 0 1px 2px #000,0 0 0 2px #4d7cff22}
+#led i::after{background:radial-gradient(circle at 35% 30%,#ffa59c,#ff3b2f 65%);box-shadow:0 0 5px 1px #ff2a1acc}
+#led i::before{color:#8fb4e8;opacity:.85}
+.keys{gap:8px}
+.keys button{border-radius:12px}
+.keys .b{background:linear-gradient(#4089ff,#2358d6);border:1px solid #8ab5ff55;box-shadow:0 3px 0 #11307f,0 6px 10px #0007,inset 0 1px 0 #ffffff55}
+.keys .k{background:linear-gradient(#242b47,#141a30);border:1px solid #4d6cc044;box-shadow:0 3px 0 #05070f,0 6px 10px #0007,inset 0 1px 0 #ffffff1f}
+.keys button:nth-child(7n+4){margin-left:8px}
+.k small{color:#a8bce2;opacity:1}
+@media(max-width:480px){.keys{gap:5px}.keys button:nth-child(7n+4){margin-left:6px}}
+.by{color:#5cd6ff;text-shadow:none;opacity:1}
+.card{background:var(--cd);border:1px solid var(--bd);box-shadow:0 10px 26px #0006}
+.card>b::before,.hd>b::before,.gd>summary::before{background:var(--cy);box-shadow:0 0 4px #5cd6ff88}
+.gd summary{color:#dbe8ff}
+#regs b{color:#ff7d70;text-shadow:none}
+#fl .on{background:#1f4fd8;color:#eaf3ff;border-color:#6f9bff88;box-shadow:none}
+#mem{color:#9fb4dd}#mem b{background:#6fb8ff;color:#06101e}
+textarea,input{background:#060c1c}
+textarea:focus,input:focus{outline:2px solid #6fb8ff77}
+.t{color:#e4ecfa}
+.t.p{background:linear-gradient(#4d8dff,#2b5fe0);color:#fff;border-color:#7fb0ff}
+.t.p:hover{background:linear-gradient(#4d8dff,#2b5fe0)}
+.ed{background:#060c1c;border-color:#3c63d055;box-shadow:inset 0 0 18px #0008}
+.ed:focus-within{border-color:#6fb8ff88;box-shadow:inset 0 0 18px #0008,0 0 0 2px #6fb8ff30}
+#ln{color:#6fb8ff77;background:#0a1226}
+#asm{color:#9fd8ff;caret-color:#9fd8ff;text-shadow:none}
+#asm::placeholder{color:#6fb8ff66}
+#alst{background:#060c1c;color:#a8bce2}#alst .e{color:#ff8a80}
+.gd details>div{color:#c6d4ec}
+
+
+@keyframes flash{from{background:#ff8a2a;color:#1a0d00}}
+#mem i{font-style:normal;border-radius:3px}
+.ed{position:relative}#eb{position:absolute;inset:0;pointer-events:none;overflow:hidden}#eb i{position:absolute;left:0;right:0;background:#ff3b3040;border-left:3px solid #ff5a4d}
+#alst .e{cursor:pointer;text-decoration:underline dotted}#exs option{background:#0a1226;color:#e4ecfa}
+[data-theme=light]{--bg:#eef2fa;--fg:#14203a;--cd:rgba(255,255,255,.85);--bd:rgba(40,80,170,.22);--am:#1f5fc9;--cy:#2a6fe0}
+[data-theme=light] body{background:radial-gradient(800px 420px at 12% -8%,#bcd0ff77,transparent),var(--bg)}
+[data-theme=light] .card{box-shadow:0 6px 18px #2a3f7a22}[data-theme=light] .gd summary{color:#14203a}
+[data-theme=light] #regs b{color:#c4301f}[data-theme=light] #mem{color:#34476e}[data-theme=light] #mem b{background:#2a6fe0;color:#fff}
+[data-theme=light] textarea,[data-theme=light] input{background:#fff;color:#14203a}
+[data-theme=light] .t{color:#14203a;background:linear-gradient(#fff,#e6edfb)}[data-theme=light] .t.p{background:linear-gradient(#4d8dff,#2b5fe0);color:#fff}
+[data-theme=light] .ed{background:#fff;border-color:#9bb3e8;box-shadow:none}[data-theme=light] #ln{background:#eef3fd;color:#2a6fe099}
+[data-theme=light] #asm{color:#173a85;caret-color:#173a85}[data-theme=light] #alst{background:#fff;color:#34476e}
+[data-theme=light] #alst .e{color:#c4301f}[data-theme=light] #alst .h{color:#0a8a4a}[data-theme=light] .gd details>div{color:#2a3a5c}
+[data-theme=light] #exs option{background:#fff;color:#14203a}
+.tb{grid-column:1/-1;position:relative;display:flex;justify-content:flex-end;align-items:center;gap:8px}.tb .by{margin:0 auto 0 2px;text-align:left;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600;font-size:calc(13px*var(--fz,1));line-height:1.3;letter-spacing:0}#tth{font-size:18px;line-height:1;padding:0;width:44px;height:34px;display:inline-flex;align-items:center;justify-content:center}:root:not([data-theme=light]) .ti-l,[data-theme=light] .ti-d{display:none}[data-theme=light] .ti-l{color:#f08a24}#tmn{font-size:20px;line-height:1;padding:6px 12px}
+#tmp{position:absolute;right:0;top:calc(100% + 6px);z-index:60;width:min(260px,calc(100vw - 28px));display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid var(--bd);border-radius:14px;background:#0a1226f5;backdrop-filter:blur(8px);box-shadow:0 14px 34px #000a}
+#tmp .t{width:100%;text-align:start}#tmp[hidden],#tfw[hidden]{display:none}
+#tfw{display:flex;align-items:center;gap:10px;padding:2px 6px 6px}#tfw i{font:700 12px system-ui}#tfw b{font-size:20px}
+#tfr{flex:1;min-width:0;height:28px;padding:0;border:0;background:none;accent-color:#6fb8ff}#tfi,#asl{display:none}
+main>:not(.kit):not(.tb){zoom:var(--fz,1)}
+.ar .gd>summary,.ar .gd details>summary,.ar .gd details>div,.ar #tmp{direction:rtl;text-align:right}
+[data-theme=light] #tmp{background:#fffffff5;box-shadow:0 14px 34px #2a3f7a44}
+.lw{border:1px solid #4d7cff30;border-radius:14px;padding:10px 12px 24px;margin:12px 0 14px;background:#ffffff0a}
+/* light mode: warm & friendly */
+[data-theme=light]{--bg:#fbf5ee;--fg:#241d45;--cd:rgba(255,255,255,.92);--bd:rgba(120,90,170,.22);--am:#6d4fc2;--cy:#8a63d2}
+[data-theme=light] body{background:radial-gradient(800px 420px at 12% -8%,#ffd9b966,transparent),radial-gradient(700px 400px at 100% 0,#d9ccf655,transparent),var(--bg)}
+[data-theme=light] .card{box-shadow:0 10px 26px #8a63d226}
+[data-theme=light] .card>b::before,[data-theme=light] .hd>b::before,[data-theme=light] .gd>summary::before{box-shadow:0 0 4px #8a63d288}
+[data-theme=light] .kit{color:#241d45;border:1px solid #ecdccf;background:linear-gradient(160deg,#fffaf4,#fcefe4 55%,#f7eaf6);box-shadow:0 18px 44px #b9856a40,inset 0 1px 0 #fff,inset 0 0 40px #8a63d214}
+[data-theme=light] .kit::before{border-color:#8a63d230}
+[data-theme=light] .kit::after{background:linear-gradient(90deg,transparent,#a77be8,#8a63d2,transparent)}
+[data-theme=light] h1{border-bottom-color:#24185022}
+[data-theme=light] h1 .mk{color:#1c1840}
+[data-theme=light] h1 .hz{color:#6b5a4e;border-color:#e6d3c4;background:#f4e8de}
+[data-theme=light] h1 .cp,[data-theme=light] .lb{color:#5a4f86}
+[data-theme=light] #dsp{background:linear-gradient(#0e0614,#1b0a22)}
+[data-theme=light] #dsp rect,[data-theme=light] #dsp circle{fill:#2a0f2e}
+[data-theme=light] #dsp rect.on,[data-theme=light] #dsp circle.on{fill:#e04ad8;filter:drop-shadow(0 0 3px #d63ad4)}
+[data-theme=light] #stat{color:#3b3270;text-shadow:none;border:1px solid #d6caf0;background:radial-gradient(circle at 16px 19px,#7b4fd0 0 4px,#7b4fd044 5px 7px,transparent 8px),linear-gradient(#efe9fb,#e6def7);box-shadow:inset 0 1px 0 #fff}
+[data-theme=light] #stat::first-line{color:#1f1848;font-weight:700}
+[data-theme=light] .lw{background:#ffffffb8;border-color:#e6dbf3}
+[data-theme=light] #lh{color:#3a2f78}
+[data-theme=light] #led i{background:radial-gradient(circle at 35% 30%,#e6def7,#c3b6e6 70%);box-shadow:inset 0 1px 2px #4a3a8a40,0 0 0 2px #8b6bd62a}[data-theme=light] #led i::after{background:radial-gradient(circle at 35% 30%,#cfa8ff,#8a3ffc 65%);box-shadow:0 0 5px 1px #9b4dffcc}
+[data-theme=light] #led i::before{color:#6a5aa8}
+[data-theme=light] .keys .b{color:#2f2a63;background:linear-gradient(#d3cff8,#b6b0ee);border:1px solid #a49de0;box-shadow:0 3px 0 #8c85d0,0 6px 10px #6a5aa833,inset 0 1px 0 #ffffffaa}
+[data-theme=light] .keys .k{background:linear-gradient(#2e2d36,#101015);border-color:#00000055;box-shadow:0 3px 0 #000,0 6px 10px #24185040,inset 0 1px 0 #ffffff26}
+[data-theme=light] .keys button:active{box-shadow:0 1px 0 #0008,inset 0 1px 0 #ffffff22}
+[data-theme=light] .k small{color:#c9c4e6}
+[data-theme=light] .by{color:#5a3fb8;opacity:1}
+[data-theme=light] .t{color:#241d45;border-color:#e6d8ee;background:linear-gradient(#fff,#f6eefb)}
+[data-theme=light] .t.p{background:linear-gradient(#8f6be0,#6a45c8);border-color:#6a45c8;color:#fff}
+[data-theme=light] #mem{color:#5a4a9a}[data-theme=light] #mem b{background:#c9bdf2;color:#2b2160}
+[data-theme=light] #regs b{color:#e0522f}
+[data-theme=light] #fl .on{background:#7a58d1;color:#fff;border-color:#7a58d1}
+[data-theme=light] #ln{background:#f6f0fb;color:#8a63d299}[data-theme=light] #asm{color:#4a2fa0;caret-color:#4a2fa0}
+[data-theme=light] .ed{border-color:#d7c9ee;box-shadow:inset 0 0 18px #8a63d21a}[data-theme=light] .ed:focus-within{border-color:#8a63d288;box-shadow:inset 0 0 18px #8a63d21a,0 0 0 2px #8a63d230}
+.ar #stat{direction:rtl;text-align:right}
+
+/* Fix: key grid overflowing on phones with large display/font size (e.g. S24 Ultra) */
+.kit{min-width:0}
+.keys{grid-template-columns:repeat(7,minmax(0,1fr))}
+.keys button{min-width:0;overflow:hidden;padding:2px 0;font-size:clamp(8.5px,2.7vw,11px)}
+.k b{font-size:clamp(14px,4.3vw,17px)}
+.k small{font-size:clamp(7px,2.1vw,8.5px)}
+/* ===== Training Mode (top-centre toggle + switch animation) ===== */
+.tb{--tmh:62px}
+.tb .by{max-width:calc(50% - var(--tmh))}
+#ttm{position:absolute;inset:0;margin:auto;width:max-content;height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;white-space:nowrap}
+#ttm .tmi{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+#ttm.on{color:#2a1500;border-color:#ffd58a;background:linear-gradient(#ffd27a,#f59a1c);box-shadow:0 0 0 2px #ffb13b40,0 0 16px #ffb13b77}
+#ttm.on:hover{background:linear-gradient(#ffdc92,#f9a52b)}
+@media(max-width:430px){.tb{--tmh:32px}#ttm{width:44px;padding:0}#ttm .tml{display:none}}
+#tmo{position:fixed;inset:0;z-index:2147483000;display:none;overflow:hidden;--x:50%;--y:30px;--d:2000px;--a:#ffb13b;--b:#ff7a2f;--c1:#2a1a06;--c2:#0c0802}
+#tmo[data-k=out]{--a:#7fd6ff;--b:#5a7dff;--c1:#10285e;--c2:#050a1c}
+#tmo.go{display:block}
+.tmo-d{position:absolute;left:calc(var(--x) - var(--d)/2);top:calc(var(--y) - var(--d)/2);width:var(--d);height:var(--d);border-radius:50%;transform:scale(0);will-change:transform;box-shadow:0 0 0 3px var(--a),0 0 70px 8px var(--b);background:linear-gradient(#ffffff0d 1px,transparent 1px) 0 0/30px 30px,linear-gradient(90deg,#ffffff0d 1px,transparent 1px) 0 0/30px 30px,radial-gradient(circle,var(--c1),var(--c2) 62%)}
+.tmo-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:var(--a);opacity:0}
+#tmo[data-k=in] .ic-out,#tmo[data-k=out] .ic-in{display:none}
+.tmo-i{width:96px;height:96px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 10px var(--b))}
+.tmo-i path,.tmo-i circle,.tmo-i rect{stroke-dasharray:1;stroke-dashoffset:1}
+.tmo-t{font:800 clamp(28px,8vw,46px)/1.1 "Sora","Segoe UI",system-ui,sans-serif;letter-spacing:.02em;color:#fff;text-shadow:0 0 26px var(--b)}
+.tmo-s{font:600 clamp(13px,3.6vw,16px)/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;font-style:normal;color:var(--a)}
+.tmo-p{width:min(220px,56vw);height:3px;margin-top:6px;border-radius:3px;background:#ffffff26;overflow:hidden}
+.tmo-p::after{content:"";display:block;height:100%;background:linear-gradient(90deg,var(--a),var(--b));transform:scaleX(0);transform-origin:left}
+#tmo.go .tmo-d{animation:tmoD 1.7s cubic-bezier(.65,0,.35,1) both}
+#tmo.go .tmo-c{animation:tmoC 1.7s ease both}
+#tmo.go .tmo-i path,#tmo.go .tmo-i circle,#tmo.go .tmo-i rect{animation:tmoW .8s ease .3s both}
+#tmo.go .tmo-p::after{animation:tmoP .9s ease .35s both}
+@keyframes tmoD{0%{transform:scale(0)}34%,68%{transform:scale(1)}100%{transform:scale(0)}}
+@keyframes tmoC{0%,20%{opacity:0;transform:translateY(14px) scale(.96)}36%,62%{opacity:1;transform:none}74%,100%{opacity:0;transform:translateY(-10px) scale(1.03)}}
+@keyframes tmoW{to{stroke-dashoffset:0}}
+@keyframes tmoP{to{transform:scaleX(1)}}
+#tmo[dir=rtl] .tmo-t{letter-spacing:0}
+@media(prefers-reduced-motion:reduce){#tmo.go .tmo-d{animation:tmoR 1.2s linear both;transform:scale(1)}#tmo.go .tmo-c{animation:tmoR 1.2s linear both}#tmo.go .tmo-i path,#tmo.go .tmo-i circle,#tmo.go .tmo-i rect{animation:none;stroke-dashoffset:0}#tmo.go .tmo-p::after{animation:none;transform:none}@keyframes tmoR{0%{opacity:0}25%,70%{opacity:1}100%{opacity:0}}}
+/* Training Mode: icon row, levels path, white lesson area */
+#tmq,#tmv,#tmw{display:none}
+[data-mode=training] #tfz,[data-mode=training] #tsn,[data-mode=training] #tlg,[data-mode=training] #tex,[data-mode=training] #tim,[data-mode=training] #stat,[data-mode=training] .lw{display:none}
+[data-mode=training] #tmp{width:min(290px,calc(100vw - 28px));max-height:calc(100vh - 84px);overflow-y:auto;overscroll-behavior:contain}
+[data-mode=training] #tmq{display:flex;gap:8px;order:-2}[data-mode=training] #tfw{order:-1}[data-mode=training] #tmv{display:flex;flex-direction:column;gap:8px;order:1}[data-mode=training] #tin{order:0}
+#tmq .t{flex:1;width:auto;min-width:0;height:38px;padding:0;display:grid;place-items:center;font-size:17px;text-align:center}
+#tmv .lv{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:#ffffff0a;color:inherit;font:inherit;text-align:start;cursor:pointer}
+.lv .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:800 14px var(--mono);background:#ffffff14}
+.lv .tx{flex:1;min-width:0;display:flex;flex-direction:column}.lv .tx b{font-size:14px}.lv .tx i{font-style:normal;font-size:11px;opacity:.7}
+.lv .st{flex:none;font-size:15px}
+.lv.cur{border-color:#ffd58a;background:linear-gradient(#ffd27a26,#f59a1c1f);box-shadow:0 0 14px #ffb13b44}
+.lv.cur .n{background:linear-gradient(#ffd27a,#f59a1c);color:#2a1500}
+.lv:disabled{opacity:.5;cursor:not-allowed}
+.lv:not(:last-child)::after{content:"";position:absolute;left:26px;top:100%;height:8px;width:2px;background:var(--bd)}
+.ar .lv:not(:last-child)::after{left:auto;right:26px}
+[data-theme=light] .lv .n{background:#0000000f}
+#tmw{min-height:140px;margin:12px 2px 22px;border-radius:12px;background:#fff;border:1px solid #0003;box-shadow:inset 0 0 12px #0000001a}
+[data-mode=training] #tmw{display:block}
+/* TKE Bot v2: kit-theme area, holo board, menu rows, icons */
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-inline-end:.5em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#tmq .ic{width:20px;height:20px;margin:0;vertical-align:middle}
+.fzW{display:flex;align-items:center;justify-content:center;gap:10px}
+.fzA{font:800 21px/1 "Sora","Segoe UI",system-ui,sans-serif}
+.fzD{width:46px;height:31px;flex:none}.fzD path{fill:#ffb13b1f;stroke:var(--am);stroke-width:1.8;stroke-linejoin:round}.fzD text{font:700 10.5px var(--mono);fill:currentColor;text-anchor:middle}
+#tmp{flex-direction:row;flex-wrap:wrap;align-content:flex-start;width:min(216px,calc(100vw - 28px))}
+#tmp #tfz,#tmp #tfw,#tmp #tin,#tmp #tmq,#tmp #tmv{flex:1 1 100%}
+#tmp #tsn,#tmp #tlg,#tmp #tex,#tmp #tim{flex:1 1 calc(50% - 3px);width:auto;min-width:0;padding-inline:8px;font-size:13px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tin{order:9}
+#tmw{min-height:150px;margin:12px 0 14px;border:1px solid #4d7cff30;border-radius:14px;background:repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 22px),#ffffff0a;box-shadow:inset 0 0 22px #0a1a4a66}
+[data-theme=light] #tmw{background:repeating-linear-gradient(90deg,#8a63d210 0 1px,transparent 1px 22px),#ffffffb8;border-color:#e6dbf3;box-shadow:none}
+[data-mode=training] #tmw{display:flex;align-items:flex-end;gap:10px;padding:12px}
+.ar #tmw,.ar .tmb{direction:rtl}.ar .tmr{transform:scaleX(-1)}
+.tmc{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tmr{width:100px;height:auto;overflow:visible}
+.tmn{font:800 10.5px var(--mono);letter-spacing:.08em;color:#d7ecff;padding:2px 10px;border-radius:99px;border:1px solid #5aa0ff88;background:#0b1d44;box-shadow:0 0 10px #3b78d855}
+.tmb{position:relative;flex:1;min-width:0;align-self:stretch;min-height:124px;padding:0 12px 10px;border-radius:12px;background:linear-gradient(160deg,#0d2547,#071226);border:1.5px solid #5aa0ff;box-shadow:0 0 0 3px #5aa0ff1f,0 0 20px #3b78d866,inset 0 0 26px #0008;color:#d7ecff;overflow:hidden}
+.tmb::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#ffffff08 0 1px,transparent 1px 3px)}
+.tmh{position:relative;display:flex;align-items:center;gap:5px;margin:0 -12px 9px;padding:7px 12px;border-bottom:1px solid #5aa0ff33;background:#ffffff0a}
+.tmh i{width:7px;height:7px;border-radius:50%;background:#ff6b6b}.tmh i:nth-child(2){background:#ffd166}.tmh i:nth-child(3){background:#3ddc97}
+.tmh b{margin-inline-start:auto;width:22px;height:4px;border-radius:2px;background:#7fd6ff;box-shadow:0 0 8px #7fd6ff;animation:tmN 1.4s ease-in-out infinite alternate}
+#tmt{position:relative;font:600 13px/1.65 var(--mono);text-shadow:0 0 8px #5aa0ff88;white-space:pre-wrap;overflow-wrap:anywhere}
+.ar #tmt{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;text-align:right}
+#tmt.ty::after{content:"";display:inline-block;width:7px;height:14px;margin-inline-start:3px;vertical-align:-2px;background:#7fd6ff;box-shadow:0 0 8px #7fd6ff;animation:tmC .6s steps(2) infinite}
+.bob{animation:tmB 2.2s ease-in-out infinite alternate}.glow{transform-origin:50px 128px;animation:tmH 2.2s ease-in-out infinite alternate}
+.ptr{filter:drop-shadow(0 0 3px #7fd6ff)}.arm{transform-origin:68px 68px}.eyes{transform-origin:50px 33px;animation:tmE 4.5s infinite}.mth{transform-origin:50px 44px}.ant{animation:tmN 1.4s ease-in-out infinite alternate}
+.say .arm{animation:tmA .5s ease-in-out infinite alternate}.say .mth{animation:tmM .24s ease-in-out infinite alternate}
+@keyframes tmB{to{transform:translateY(-4px)}}@keyframes tmH{to{transform:scale(.8);opacity:.6}}@keyframes tmC{50%{opacity:0}}@keyframes tmE{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}@keyframes tmN{to{opacity:.3}}@keyframes tmA{to{transform:rotate(-9deg)}}@keyframes tmM{to{transform:scaleY(.25)}}
+@media(prefers-reduced-motion:reduce){.tmr *,.tmh b{animation:none!important}}
+/* TKE Bot v3: fixed-size area, theme-aware board, pill badge */
+.fzD rect{fill:#ffb13b1f;stroke:var(--am);stroke-width:1.8}
+[data-mode=training] #tmw{height:180px;min-height:0;box-sizing:border-box;overflow:hidden}
+.tmr{width:auto;height:118px}
+.tmb{--b1:#0d2547;--b2:#071226;--bc:#5aa0ff;--hl:#5aa0ff33;--tx:#d7ecff;--ac:#7fd6ff;--sl:#ffffff08;--hb:#ffffff0a;--ts:0 0 8px #5aa0ff88;--gl:0 0 0 3px #5aa0ff1f,0 0 20px #3b78d866,inset 0 0 26px #0008;display:flex;flex-direction:column;min-height:0;background:linear-gradient(160deg,var(--b1),var(--b2));border-color:var(--bc);box-shadow:var(--gl);color:var(--tx)}
+[data-theme=light] .tmb{--b1:#fff;--b2:#f1e8fb;--bc:#a77be8;--hl:#a77be855;--tx:#2a2350;--ac:#8a63d2;--sl:#8a63d210;--hb:#8a63d210;--ts:none;--gl:0 0 0 3px #a77be822,0 4px 16px #8a63d233,inset 0 0 18px #8a63d214}
+.tmb::before{background:repeating-linear-gradient(0deg,var(--sl) 0 1px,transparent 1px 3px)}
+.tmh{flex:none;background:var(--hb);border-bottom-color:var(--hl)}
+.tmh b{background:var(--ac);box-shadow:0 0 8px var(--ac)}
+#tmt{flex:1;min-height:0;overflow-y:auto;font-size:13px;line-height:1.65;text-shadow:var(--ts);scrollbar-width:none}
+#tmt::-webkit-scrollbar{display:none}
+#tmt.ty::after{background:var(--ac);box-shadow:0 0 8px var(--ac)}
+[data-theme=light] .tmn{color:#3b2a7a;background:#fff;border-color:#a77be8aa;box-shadow:0 0 10px #8a63d233}
+@media(max-width:360px){.tmr{height:92px}}
+/* font button v2: chip badge, smaller row */
+.fzW{gap:8px}.fzA{font-size:17px}
+.fzD{width:40px;height:26px}.fzD rect{fill:#ffb13b1f;stroke:var(--am);stroke-width:1.6}.fzD path{fill:none;stroke:var(--am);stroke-width:1.6;stroke-linecap:round}.fzD text{font-size:9.5px}
+[data-theme=light] .fzD rect,[data-theme=light] .fzD path{stroke:#d9820a}
+#tmp #tfz{padding:4px 10px}
+/* Training levels: lesson list, bot controls, orange highlight */
+#tmv .lb{align-self:flex-start;background:none;border:0;color:inherit;font:700 13px system-ui,sans-serif;padding:2px 4px;cursor:pointer;opacity:.85}
+.tmz{margin:8px;text-align:center;opacity:.7;font-size:13px}
+.tmk{display:none;position:relative;flex:none;align-items:center;gap:8px;margin-top:6px}
+#tmw.ls .tmk{display:flex}
+.tmk button{flex:none;width:34px;height:26px;border-radius:8px;border:1px solid var(--bc);background:var(--hb);color:var(--tx);font:700 16px/1 system-ui,sans-serif;cursor:pointer}
+.tmk button:disabled{opacity:.35;cursor:default}
+.tmk span{flex:1;text-align:center;font:700 11px var(--mono);opacity:.8}
+#keys .tkhl,#regs .tkhl{outline:2px solid #ff9a1f;outline-offset:1px;border-radius:8px;box-shadow:0 0 0 4px #ff9a1f55,0 0 18px #ff9a1f;animation:tkP .8s ease-in-out infinite alternate;position:relative;z-index:2}
+@keyframes tkP{to{box-shadow:0 0 0 7px #ff9a1f22,0 0 26px #ff9a1f}}
+@media(prefers-reduced-motion:reduce){.tkhl{animation:none!important}}
+/* Training: end-of-item check animation, glowing next button, 7-seg highlight, orange done items */
+#tkd{position:absolute;inset:0;z-index:3;display:grid;place-items:center;pointer-events:none;opacity:0}
+#tkd svg{width:54px;height:54px;filter:drop-shadow(0 0 10px #ff9a1f)}
+#tkd circle{fill:#ff9a1f}
+#tkd path{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+#tkd.go{animation:tkDa 1.1s ease both}
+#tkd.go path{animation:tkDp .4s ease .15s both}
+@keyframes tkDa{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.1)}40%{transform:scale(1)}78%{opacity:1}100%{opacity:0;transform:scale(1)}}
+@keyframes tkDp{to{stroke-dashoffset:0}}
+.tmk button.tkg{border-color:#ffd58a;color:#2a1500;background:linear-gradient(#ffd27a,#f59a1c);animation:tkG .9s ease-in-out infinite alternate}
+@keyframes tkG{from{box-shadow:0 0 0 2px #ffb13b55,0 0 8px #ffb13b88}to{box-shadow:0 0 0 5px #ffb13b22,0 0 20px #ffb13b}}
+#dsp.tkhl{outline:2px solid #ff9a1f;outline-offset:2px;box-shadow:inset 0 2px 10px #000,0 0 0 4px #ff9a1f55,0 0 18px #ff9a1f;animation:tkQ .8s ease-in-out infinite alternate}
+@keyframes tkQ{to{box-shadow:inset 0 2px 10px #000,0 0 0 7px #ff9a1f22,0 0 26px #ff9a1f}}
+#tmv .lv.li.dn{border-color:#ffd24a;background:linear-gradient(#ffd24a8c,#c9971c66);box-shadow:0 0 14px #ffd24a66}
+.lv.li.dn .n{background:linear-gradient(#ffe27a,#d9a21b);color:#2a1d00}
+/* item types: concept = blue, example = violet, exercise = green, final test = rose */
+#tmv .lv.li{--kc:#4f9dff;--kb:#4f9dff47}
+#tmv .lv.li.kd-e{--kc:#a78bfa;--kb:#a78bfa47}
+#tmv .lv.li.kd-x{--kc:#34d399;--kb:#34d39947}
+#tmv .lv.li.kd-q{--kc:#fb7185;--kb:#fb718547}
+#tmv .lv.li:not(.dn){border-color:#8a93a6;background:var(--kb)}
+#tmv .lv.li:not(.dn) .n{background:var(--kc);color:#08121f}
+#tmv .lv.li:not(.dn) .st{color:var(--kc)}
+@media(prefers-reduced-motion:reduce){#tkd.go{animation:tkDr 1.1s linear both}#tkd.go path{animation:none;stroke-dashoffset:0}.tmk button.tkg{animation:none;box-shadow:0 0 0 3px #ffb13b55,0 0 14px #ffb13b}@keyframes tkDr{0%{opacity:0}25%,75%{opacity:1}100%{opacity:0}}}
+/* Training: hint button (exercises only) + orange welcome glow on the levels menu */
+#tkhint{display:none;flex:1 1 0!important;min-width:0;width:auto!important;padding:0 10px;font:700 12px/1 system-ui,"Segoe UI",Tahoma,sans-serif!important;white-space:nowrap;border-color:#ffb13b!important;color:#ffb13b!important}
+#tmw.ls.hx #tkhint{display:block}
+#tmw.hx .tmb{min-height:150px}
+/* Training: Levels button shown after the final test */
+#tkfin{display:none;flex:none;justify-content:center;margin-top:6px}
+#tmw.fin #tkfin{display:flex}
+#tmw.fin .tmb{min-height:150px}
+#tklv{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 16px;border-radius:10px;border:1px solid #ffd58a;background:linear-gradient(#ffd27a,#f59a1c);color:#2a1500;font:700 13px/1 system-ui,"Segoe UI",Tahoma,sans-serif;cursor:pointer;animation:tkG .9s ease-in-out infinite alternate}
+#tklv svg{width:16px;height:16px;fill:currentColor}
+@media(prefers-reduced-motion:reduce){#tklv{animation:none;box-shadow:0 0 0 3px #ffb13b55,0 0 14px #ffb13b}}
+
+#tmn.tkw{border-color:#ffd58a;color:#2a1500;background:linear-gradient(#ffd27a,#f59a1c);animation:tkG .9s ease-in-out infinite alternate}
+#tmv.tkw{outline:2px solid #ff9a1f;outline-offset:3px;border-radius:14px;animation:tkQ2 .8s ease-in-out infinite alternate}
+#tmv.tkw .lv:not(:disabled){border-color:#ffb13b;background:linear-gradient(#ffb13b26,#f59a1c1a)}
+@keyframes tkQ2{from{box-shadow:0 0 0 0 #ff9a1f55,0 0 10px #ff9a1f66}to{box-shadow:0 0 0 5px #ff9a1f22,0 0 22px #ff9a1f}}
+@media(prefers-reduced-motion:reduce){#tmn.tkw,#tmv.tkw{animation:none;box-shadow:0 0 0 3px #ffb13b55,0 0 14px #ffb13b}}
+
+/* explanation screen: one wide frame filling the panel; TKE Bot stands inside it, in front of the screen */
+[data-mode=training] #tmw{display:block;position:relative;padding:5px}
+[data-mode=training] .tmb{width:100%;height:100%;box-sizing:border-box;padding:0 14px 8px}
+[data-mode=training] .tmh{margin:0 -14px 6px}
+[data-mode=training] .tmc{position:absolute;z-index:3;top:12px;inset-inline-start:10px;pointer-events:none}
+[data-mode=training] .tmr{height:92px;filter:drop-shadow(0 3px 5px #0007)}
+[data-mode=training] #tmt{padding-inline-start:80px}
+/* Training: back-step button + page number live in the board header, so TKE Bot can stand lower */
+.tmh #tkc{display:none;flex:none;min-width:30px;text-align:center;font:700 11px var(--mono);opacity:.85}
+#tmw.ls .tmh #tkc{display:block}
+.tmk #tkb{display:none}
+#tmw.ls:not(.qz) .tmk #tkb{display:block}
+.tmk #tkn{margin-inline-start:auto}
+.tmk #tkp{display:none}
+#tmw.qz .tmk #tkp{display:block}
+#tkln{display:none;flex:none;gap:8px;margin-top:6px;position:relative}
+#tkln.on{display:flex}
+#tmw.ln .tmb{min-height:158px}
+#tkln button{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;padding:7px 8px;border-radius:9px;border:1.5px solid var(--ac);background:var(--hb);color:var(--ac);font:700 12.5px/1.2 system-ui,"Segoe UI",Tahoma,sans-serif;cursor:pointer}
+#tkln button .ic{width:15px;height:15px;margin:0 6px 0 0;vertical-align:middle}.ar #tkln button .ic{margin:0 0 0 6px}
+#tkln #tkle{background:var(--ac);color:#06142b}
+[data-theme=light] #tkln #tkle{color:#fff}
+[data-mode=training] #tkln{padding-inline-start:84px}
+[data-mode=training] #tmw{padding:0}
+[data-mode=training] .tmb{border-radius:13px}
+[data-mode=training] .tmc{top:auto;bottom:34px;--cx:40.32%;--tx:#d7ecff;--bc:#5aa0ff}
+[data-theme=light][data-mode=training] .tmc{--tx:#3b2a7a;--bc:#a77be8}
+.ar[data-mode=training] .tmc{--cx:59.68%}
+/* text-size icon: small + big "A" with a percentage pill that shows where the slider is (80-160%) */
+.fzW{gap:7px}
+.fzS{display:flex;align-items:baseline;gap:1px;font-family:"Sora","Segoe UI",system-ui,sans-serif;line-height:1}
+.fzS i{font:700 12px/1 "Sora","Segoe UI",system-ui,sans-serif;opacity:.8}.fzS b{font:800 19px/1 "Sora","Segoe UI",system-ui,sans-serif}
+.fzP{position:relative;padding:4px 8px 7px;border:1.5px solid var(--am);border-radius:99px;background:#ffb13b1f;font:700 10px/1 var(--mono);letter-spacing:.02em}
+.fzP::after{content:"";position:absolute;left:8px;right:8px;bottom:3px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--am) var(--p,50%),#ffffff2e 0)}
+[data-theme=light] .fzP{border-color:#d9820a;background:#ffb13b1f}
+[data-theme=light] .fzP::after{background:linear-gradient(90deg,#d9820a var(--p,50%),#8a63d226 0)}
+/* name plate under TKE Bot: cut-corner "lozenge" plate, centred on the robot's body (not on its pointer arm) */
+[data-mode=training] .tmn{position:absolute;left:var(--cx);top:calc(100% + 4px);translate:-50% 0;isolation:isolate;white-space:nowrap;font:800 9.5px/1 var(--mono);letter-spacing:.1em;padding:5px 12px;margin:0;border:0;border-radius:0;box-shadow:none;color:var(--tx);background:var(--bc);--cut:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);clip-path:var(--cut)}
+[data-mode=training] .tmn::before{content:"";position:absolute;inset:1px;z-index:-1;background:linear-gradient(#143a72,#0a1d40);clip-path:var(--cut)}
+[data-theme=light][data-mode=training] .tmn::before{background:linear-gradient(#fff,#f1e8fb)}
+[data-mode=training] .tmk{padding-inline-start:84px}
+/* icons: bulb (hint) and lock (locked levels) as outline SVGs; smaller TKE Bot name badge */
+.tmk .ic{width:15px;height:15px;margin:0 6px 0 0;vertical-align:-3px}.ar .tmk .ic{margin:0 0 0 6px}
+.tmk .ic .bf{fill:#ffb13b33}
+.lv .st .ic{width:19px;height:19px;margin:0;vertical-align:middle}.lv .st .ic .lf{fill:currentColor;stroke:none}
+.lv:disabled .st{opacity:.75}
+/* language switch: new animation (page fade/slide + light sweep + language pill); also runs with "reduce motion" on, as a plain fade */
+#lgo{position:fixed;inset:0;z-index:2147482000;pointer-events:none;display:none;overflow:hidden;--c1:#6fb8ff66;--c2:#9a5cff77;--pb:#0a1430f2;--pc:#e4ecfa;--pr:#6fb8ffaa}
+[data-theme=light] #lgo{--c1:#ffb98a66;--c2:#a77be877;--pb:#fffffff2;--pc:#2a2350;--pr:#a77be8}
+#lgo i{position:absolute;top:0;bottom:0;left:0;width:55vw;background:linear-gradient(90deg,transparent,var(--c1) 42%,var(--c2) 58%,transparent)}
+#lgo b{position:absolute;left:50%;top:50%;translate:-50% -50%;padding:12px 26px;border-radius:99px;background:var(--pb);color:var(--pc);border:1.5px solid var(--pr);box-shadow:0 0 28px var(--pr);font:800 clamp(18px,5vw,26px)/1.2 system-ui,"Segoe UI",Tahoma,sans-serif;opacity:0}
+/* Training: AH / AL byte highlight on the 7-segment digits */
+#dsp svg.tkhl{outline:2px solid #ff9a1f;outline-offset:1px;border-radius:5px;background:#ff9a1f40;box-shadow:0 0 12px #ff9a1f;animation:tkP .8s ease-in-out infinite alternate}
+</style></head><body><div id=tke-splash aria-hidden=true><img class=ic src=icons/icon-512.png alt=""><img class=tt src=splash/splash-title.svg alt="Trainer Kit Emulator for 8086 Microprocessor - By: Mustafa Aqeel"></div><main>
+<div class=tb id=tb><div class=by>By: Mustafa Aqeel</div><button class=t id=ttm type=button aria-label="Training Mode" aria-pressed=false title="Training Mode"><svg class=tmi viewBox="0 0 64 64" aria-hidden=true><path d="M32 12 60 26 32 40 4 26Z"/><path d="M16 33v11c0 4 7 8 16 8s16-4 16-8V33"/><path d="M56 28v14"/></svg><span class=tml>Training</span></button><button class=t id=tth aria-label=Theme title=Theme><span class=ti-l>&#9728;&#65038;</span><span class=ti-d>&#9790;</span></button><button class=t id=tmn aria-label=Menu aria-expanded=false>&#9776;</button><div id=tmp hidden><button class=t id=tfz></button><div id=tfw hidden><i>A</i><input type=range id=tfr min=80 max=160 step=5 value=100><b>A</b></div><button class=t id=tsn></button><button class=t id=tlg></button><div id=tmq><button class=t id=tq1 type=button>&#127760;</button><button class=t id=tq2 type=button>Aa</button><button class=t id=tq3 type=button></button></div><div id=tmv></div><button class=t id=tin hidden data-ar="📲 تثبيت">📲 Install</button><button class=t id=tex data-ar="&#11015; تصدير">&#11015; Export</button><button class=t id=tim data-ar="&#11014; استيراد">&#11014; Import</button><input type=file id=tfi accept=".json,application/json"></div></div>
+
+<section class=kit>
+<h1><span class=mk>KITEK M86-01</span><span class=hz>5 MHz</span><span class=cp>8086 MICROPROCESSOR TRAINER KIT</span></h1>
+<div id=dsp></div>
+<div class=lb><span>ADDRESS DISPLAY</span><span>DATA DISPLAY</span></div>
+<div id=stat></div><div id=tmw><div class=tmc><svg class=tmr viewBox="0 0 124 138" role=img aria-label="TKE Bot"><defs><linearGradient id=tkh x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color=#f6faff /><stop offset=1 stop-color=#b4c8e8 /></linearGradient><radialGradient id=tkg><stop offset=0 stop-color=#7fd6ff stop-opacity=.8 /><stop offset=1 stop-color=#7fd6ff stop-opacity=0 /></radialGradient></defs><ellipse class=glow cx=50 cy=128 rx=28 ry=6 fill=url(#tkg) /><g class=bob><path d="M30 66q0-7 8-7h24q8 0 8 7l9 42q1 7-6 7H28q-7 0-6-7z" fill="#fff" stroke="#8ea8cf" stroke-width="2.5" stroke-linejoin="round"/><path d="M42 59l8 20 8-20z" fill="#3b78d8"/><circle cx=50 cy=70 r=2 fill=#7fd6ff /><path d="M42 59l-8 24 14-6zM58 59l8 24-14-6z" fill="#eaf1fb" stroke="#8ea8cf" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 77v38" stroke="#c6d3e6" stroke-width="2"/><circle cx=50 cy=92 r=1.8 fill=#8ea8cf /><circle cx=50 cy=103 r=1.8 fill=#8ea8cf /><rect x=30 y=88 width=15 height=15 rx=2.5 fill=#f1f6fd stroke=#b9c9df stroke-width=1.5 /><rect x=35 y=82 width=3 height=11 rx=1.5 fill=#ff7a2f /><rect x=56 y=88 width=13 height=9 rx=2 fill=#ffb13b /><path d="M59 92.5h7" stroke="#8a4b00" stroke-width="1.4" stroke-linecap="round"/><path d="M26 109h48" stroke="#5aa0ff" stroke-width="2" stroke-linecap="round" opacity=.7 /><path d="M32 68L24 90" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M32 68L24 90" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><rect x=5 y=84 width=17 height=24 rx=3 fill=#12305a stroke=#7fd6ff stroke-width=1.6 /><path d="M9 91h9M9 96h9M9 101h6" stroke="#7fd6ff" stroke-width="1.5" stroke-linecap="round"/><circle cx=23 cy=92 r=5 fill=#c9d8ef /><g class=arm><path d="M68 68L90 52" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M68 68L90 52" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><path class=ptr d="M93 50L118 31" stroke="#7fd6ff" stroke-width="3" stroke-linecap="round"/><circle class=ptr cx=118 cy=31 r=3.2 fill=#fff /><circle cx=92 cy=51 r=5 fill=#c9d8ef /></g><rect x=44 y=54 width=12 height=7 rx=2 fill=#6b86b3 /><circle cx=17 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><circle cx=83 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><rect x=20 y=12 width=60 height=44 rx=16 fill=url(#tkh) stroke=#6b86b3 stroke-width=2.5 /><rect x=27 y=19 width=46 height=30 rx=11 fill=#0b1a33 stroke=#2f6fd6 stroke-width=1.5 /><g class=eyes><rect x=35 y=28 width=9 height=11 rx=4 fill=#7fd6ff /><rect x=56 y=28 width=9 height=11 rx=4 fill=#7fd6ff /></g><path class=mth d="M43 44q7 5 14 0" stroke="#7fd6ff" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M50 12V5" stroke="#6b86b3" stroke-width="3" stroke-linecap="round"/><circle class=ant cx=50 cy=4 r=4 fill=#ffb13b /></g></svg><span class=tmn>TKE Bot</span></div><div class=tmb><div class=tmh><i></i><i></i><i></i><b></b><span id=tkc></span></div><div id=tmt></div><div id=tkln></div><div class=tmk><button id=tkp type=button></button><button id=tkb type=button></button><button id=tkhint type=button></button><button id=tkn type=button></button></div><div id=tkfin><button id=tklv type=button><svg viewBox="0 0 24 24" aria-hidden=true><rect x=3 y=14 width=5 height=7 rx=1.2 /><rect x=9.5 y=9 width=5 height=12 rx=1.2 /><rect x=16 y=4 width=5 height=17 rx=1.2 /></svg><span></span></button></div><i id=tkd aria-hidden=true><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=29 /><path pathLength=1 d="M19 33l9 9 17-19"/></svg></i></div></div>
+<div class=lw><span id=lh>OUT 00h</span><div id=led title="Last byte written by OUT"></div></div>
+<div class=keys id=keys></div>
+</section>
+<aside>
+<details class="card gd" open><summary>Registers</summary><div class=dc><div id=regs></div><div id=fl></div></div></details>
+<details class="card gd" open><summary>Memory (RAM 00000–3FFFF)</summary><pre id=mem></pre></details>
+<details class="card gd"><summary>Load a program</summary><div class=dc>
+<input id=ha placeholder="Start address (hex)" autocomplete=off aria-label="Load address (hex)">
+<textarea id=hx rows=2 placeholder="Machine code as hex bytes, e.g. B8 34 12 CC"></textarea>
+<div class=ab style="margin:6px 0 0"><button class=t id=ld>Load</button> <button class=t id=dm>Demo</button> <button class=t id=lc>Clear</button></div>
+</div></details>
+</aside>
+<details class="card gd asm"><summary>Assembly editor</summary><div class=dc>
+<div class=ab><button class="t p" id=asr>Assemble &amp; Run</button> <button class=t id=asb>Assemble</button> <select id=exs class=t aria-label="Examples"></select><button class=t id=asl>Sample</button> <button class=t id=asc>Copy</button> <button class=t id=ass>Save .asm</button> <button class=t id=asx>Clear</button></div>
+<div class=ed><pre id=ln aria-hidden=true></pre><textarea id=asm wrap=off spellcheck=false autocapitalize=off autocomplete=off placeholder="; Write your 8086 assembly code here" aria-label="Assembly code"></textarea></div>
+<p id=asi></p>
+<pre id=alst>Press Assemble to translate your code to machine code and load it into RAM.</pre>
+</div></details>
+<details class="card gd lg"><summary>Lab guide</summary>
+<details><summary>Start here (beginners)</summary><div><ul>
+<li>The <b>green screen</b> tells you the next step. The red displays show the address (left) and the data (right).</li>
+<li>Numbers are <b>hex</b> (0-9, A-F). Typing <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd> means address 0500h.</li>
+<li>When the display shows <b>8086 uP</b> the kit is idle and the black keys are commands: <kbd>0</kbd> EB, <kbd>1</kbd> ER, <kbd>2</kbd> GO, <kbd>3</kbd> ST, <kbd>4</kbd> IB, <kbd>5</kbd> OB, <kbd>6</kbd> MV, <kbd>7</kbd> EW, <kbd>8</kbd> IW, <kbd>9</kbd> OW, <kbd>C</kbd> BC, <kbd>E</kbd> VR. While you type an address or a value they are plain digits.</li>
+<li><kbd>NEXT</kbd> confirms and moves on, <kbd>TTY</kbd> finishes or exits, <kbd>B.S</kbd> erases a digit, <kbd>RESET</kbd> restarts the kit (memory is kept).</li>
+</ul></div></details>
+<details><summary>Your first program</summary><div>Store <b>B4 AA CC</b> (MOV AH,0AAh then INT 3) at 0500 and run it:<ol>
+<li>At the idle screen press <kbd>0</kbd> (EB).</li>
+<li>Type <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd>, then <kbd>NEXT</kbd>.</li>
+<li>Type <kbd>B</kbd><kbd>4</kbd> <kbd>NEXT</kbd>, <kbd>A</kbd><kbd>A</kbd> <kbd>NEXT</kbd>, <kbd>C</kbd><kbd>C</kbd> <kbd>NEXT</kbd>.</li>
+<li>Press <kbd>TTY</kbd> to finish.</li>
+<li>Press <kbd>2</kbd> (GO), type <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd>, press <kbd>NEXT</kbd>, then <kbd>TTY</kbd>.</li>
+<li>It stops at CC. AX in the Registers card now shows AA00.</li>
+</ol></div></details>
+<details><summary>Edit memory (EB / EW)</summary><div><ol>
+<li><kbd>0</kbd> (EB) edits bytes, <kbd>7</kbd> (EW) edits 16-bit words.</li>
+<li>Type the address (any number of digits), then <kbd>NEXT</kbd>.</li>
+<li>Type a value, then <kbd>NEXT</kbd> to store it and move to the next address. <kbd>PRV</kbd> stores and goes back one.</li>
+<li><kbd>NEXT</kbd> with nothing typed just moves on, so you can browse memory.</li>
+<li><kbd>TTY</kbd> stores what you typed and exits.</li>
+</ol>EW stores the low byte first (1234 is saved as 34 12). RAM is 00000-3FFFF.</div></details>
+<details><summary>Insert and delete bytes (INS / DEL)</summary><div><ol>
+<li>Open a byte with <kbd>0</kbd> (EB) or <kbd>7</kbd> (EW): type the address, then press <kbd>NEXT</kbd> to view the data.</li>
+<li><b>Note:</b> <kbd>INS</kbd> and <kbd>DEL</kbd> only work here (in data mode). If pressed during address input, the green screen will guide you.</li>
+<li><kbd>INS</kbd> opens a 00h gap at that address, shifting subsequent bytes up.</li>
+<li><kbd>DEL</kbd> removes the current byte, shifting subsequent bytes down.</li>
+</ol>Jump and call offsets are not fixed up automatically, check them after editing.</div></details>
+<details><summary>Fill, move and compare blocks (FILL, MV, BC, VR)</summary><div><ul>
+<li><b>FILL</b> (the PRV key at idle): SA start address, EA end address, DAtA fill byte. <kbd>NEXT</kbd> after the last value runs it.</li>
+<li><b>MV</b> (<kbd>6</kbd>): SA source start, EA source end, dESt destination start. Overlapping blocks are copied correctly.</li>
+<li><b>BC</b> (<kbd>C</kbd>) and <b>VR</b> (<kbd>E</kbd>): SA, EA, then SA2 = start of the second block. On a difference the kit pauses: the address display shows the address in the first block and the data display shows the byte of block 1 followed by the byte of block 2. <kbd>NEXT</kbd> looks for the next difference, <kbd>TTY</kbd> stops. PASS means the blocks are identical.</li>
+<li>While a prompt is open, <kbd>PRV</kbd> goes back one prompt and <kbd>TTY</kbd> cancels without changing memory. A wrong range shows Err and the status line says why.</li>
+</ul></div></details>
+<details><summary>Port I/O (IB, IW, OB, OW)</summary><div><ul>
+<li><b>IB</b> (<kbd>4</kbd>) and <b>IW</b> (<kbd>8</kbd>): type the port address (up to 4 hex digits), <kbd>NEXT</kbd>. The address display shows the port and the data display shows the value (IW joins the ports n and n+1). <kbd>NEXT</kbd> and <kbd>PRV</kbd> move to the next or previous port; typing a new address starts over; <kbd>TTY</kbd> exits.</li>
+<li><b>OB</b> (<kbd>5</kbd>) and <b>OW</b> (<kbd>9</kbd>): type the port and <kbd>NEXT</kbd>, then type a value and <kbd>NEXT</kbd> to write it. You can write more values to the same port; <kbd>TTY</kbd> exits.</li>
+<li>Ports 00h and 80h are the LEDs D7-D0. Every other port keeps the last value written, and IN instructions in your programs read it back.</li>
+</ul></div></details>
+<details><summary>Interrupts and function keys (VCT, F1-F3)</summary><div><ul>
+<li><b>VCT / INTR</b>: type the vector (00-FF), <kbd>NEXT</kbd>. The kit pushes FLAGS, CS and IP, clears IF and TF and loads CS:IP from the vector table entry at vector x 4. The displays then show the handler address: use <kbd>ST</kbd>, or GO with that address. An empty table entry shows Err.</li>
+<li><b>F1 breakpoint</b>: type an address, <kbd>NEXT</kbd>. GO stops just before that address (display brEA). <kbd>NEXT</kbd> with nothing typed clears it. The Registers card shows BRK while one is set.</li>
+<li><b>F2 dump</b>: type an address (or only <kbd>NEXT</kbd> for the current IP). The status line shows 16 bytes and the Memory card follows; <kbd>NEXT</kbd> and <kbd>PRV</kbd> move by 16 bytes.</li>
+<li><b>F3 hook</b>: type an INT number, <kbd>NEXT</kbd>, then the handler address, <kbd>NEXT</kbd>. This fills the vector table entry so INT n (or VCT) calls your routine. <kbd>NEXT</kbd> with no address removes the hook.</li>
+</ul></div></details>
+<details><summary>Run a program (GO)</summary><div><ol>
+<li>Press <kbd>2</kbd> (GO).</li>
+<li>Type the start address (any number of digits), then <kbd>NEXT</kbd>. NEXT does nothing until an address is typed.</li>
+<li>Press <kbd>TTY</kbd> to run. TTY before NEXT does nothing.</li>
+</ol>The program stops at CC (INT 3) or HLT. <kbd>RESET</kbd> stops it at any time and resets the registers. CS is 0000, so the address you type is the physical address.</div></details>
+<details><summary>Single step (ST)</summary><div><ol>
+<li>Choose the start: <kbd>REG</kbd>, <kbd>C</kbd> (IP), type the address, <kbd>TTY</kbd>. IP is 2000 after RESET.</li>
+<li>Press <kbd>3</kbd> (ST) to run one instruction. The displays show the next IP and its opcode.</li>
+<li>Press ST again to continue and watch the Registers card change.</li>
+</ol></div></details>
+<details><summary>Registers (REG / ER)</summary><div><ol>
+<li>Press <kbd>REG</kbd> (or <kbd>1</kbd> = ER at the idle screen).</li>
+<li>Press the register key: 0 AX, 1 BX, 2 CX, 3 DX, 4 SP, 5 BP, 6 SI, 7 DI, 8 CS, 9 DS, A SS, B ES, C IP, D FL.</li>
+<li>The address display shows the register name (A, B, C, D = AX, BX, CX, DX) and the data display shows its value. Type up to 4 hex digits to change it.</li>
+<li><kbd>NEXT</kbd> stores and shows the next register, <kbd>PRV</kbd> the previous one, <kbd>TTY</kbd> stores and exits.</li>
+</ol></div></details>
+<details><summary>Keys and displays</summary><div><ul>
+<li><b>Blue keys</b>: RESET, REG, NEXT (CRT), PRV (FILL at idle), TTY (.), B.S, INS, DEL, VCT (INTR) and F1-F3.</li>
+<li><b>Black keys</b>: hex digits 0-F. At idle they run EB, ER, GO, ST, IB, OB, MV, EW, IW, OW, BC and VR. (LS and PRG require physical external hardware, so they are disabled).</li>
+<li><b>Dot between the displays</b>: lights while an address or a register is being shown or edited.</li>
+<li><b>LEDs D7-D0</b>: the last byte written by an OUT instruction.</li>
+<li><b>PC keyboard</b>: 0-9 and A-F, Enter = NEXT, Backspace = B.S, - = PRV, . = TTY, G = GO, Esc = RESET, Ins or + = INS, Del = DEL, V = VCT, F1-F3.</li>
+</ul></div></details>
+<details><summary>Assembly editor</summary><div><ol>
+<li>Write 8086 code in the editor. Use ORG to choose the load address (the sample uses ORG 2000h). Sample loads an example.</li>
+<li><b>Assemble</b> translates it and loads the bytes into RAM. Then run it with GO on the kit.</li>
+<li><b>Assemble &amp; Run</b> does both at once (Ctrl+Enter also works). End your code with INT 3 so it stops.</li>
+<li>Mistakes are listed with their line number in the listing below the editor.</li>
+</ol></div></details>
+<details><summary>Troubleshooting</summary><div><ul>
+<li><b>A key isn't working?</b> Always check the green status screen! It tells you exactly what mode you are in and what to press next.</li>
+<li><b>A black key types a digit instead of a command:</b> the kit is not idle. Press <kbd>RESET</kbd>.</li>
+<li><b>TTY does not run my program:</b> after GO you must type the address and press <kbd>NEXT</kbd> first.</li>
+<li><b>The program never stops:</b> end your code with CC (INT 3), or press <kbd>RESET</kbd>.</li>
+</ul></div></details>
+</details>
+</main>
+<div id=tmo aria-hidden=true><i class=tmo-d></i><div class=tmo-c><svg class=tmo-i viewBox="0 0 64 64"><g class=ic-in><path pathLength=1 d="M32 12 60 26 32 40 4 26Z"/><path pathLength=1 d="M16 33v11c0 4 7 8 16 8s16-4 16-8V33"/><path pathLength=1 d="M56 28v14"/><circle pathLength=1 cx=56 cy=46 r=3 /></g><g class=ic-out><rect pathLength=1 x=18 y=18 width=28 height=28 rx=4 /><rect pathLength=1 x=26 y=26 width=12 height=12 rx=2 /><path pathLength=1 d="M26 18v-8M32 18v-8M38 18v-8M26 46v8M32 46v8M38 46v8M18 26h-8M18 32h-8M18 38h-8M46 26h8M46 32h8M46 38h8"/></g></svg><b class=tmo-t></b><i class=tmo-s></i><span class=tmo-p></span></div></div>
+<script src=script.js></script>
+</body></html>
