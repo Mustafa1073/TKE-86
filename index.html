@@ -327,7 +327,10 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 [data-theme=light] .fzD rect,[data-theme=light] .fzD path{stroke:#d9820a}
 #tmp #tfz{padding:4px 10px}
 /* Training levels: lesson list, bot controls, orange highlight */
-#tmv .lb{align-self:flex-start;background:none;border:0;color:inherit;font:700 13px system-ui,sans-serif;padding:2px 4px;cursor:pointer;opacity:.85}
+#tmv .lb{align-self:flex-start;background:var(--hb);border:1.5px solid #ffb13b;border-radius:10px;color:inherit;font:700 13px system-ui,sans-serif;padding:5px 14px;cursor:pointer;opacity:1;box-shadow:0 2px 0 #ffb13b55;transition:transform .08s,box-shadow .08s}
+#tmv .lb:hover{background:#ffb13b22}
+#tmv .lb:active{transform:translateY(2px);box-shadow:none}
+#tmv .lb:focus-visible{outline:2px solid #ff9a1f;outline-offset:2px}
 .tmz{margin:8px;text-align:center;opacity:.7;font-size:13px}
 .tmk{display:none;position:relative;flex:none;align-items:center;gap:8px;margin-top:6px}
 #tmw.ls .tmk{display:flex}
@@ -364,6 +367,9 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 /* Training: hint button (exercises only) + orange welcome glow on the levels menu */
 #tkhint{display:none;flex:1 1 0!important;min-width:0;width:auto!important;padding:0 10px;font:700 12px/1 system-ui,"Segoe UI",Tahoma,sans-serif!important;white-space:nowrap;border-color:#ffb13b!important;color:#ffb13b!important}
 #tmw.ls.hx #tkhint{display:block}
+#tkcv{display:none;flex:1 1 0!important;min-width:0;width:auto!important;padding:0 1px;overflow:hidden;font:700 10.5px/1 system-ui,"Segoe UI",Tahoma,sans-serif!important;white-space:nowrap;border-color:#a78bfa!important;color:#a78bfa!important}
+#tmw.ls.cv #tkcv{display:block}
+
 #tmw.hx .tmb{min-height:150px}
 /* Training: Levels button shown after the final test */
 #tkfin{display:none;flex:none;justify-content:center;margin-top:6px}
@@ -432,14 +438,23 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 #lgo b{position:absolute;left:50%;top:50%;translate:-50% -50%;padding:12px 26px;border-radius:99px;background:var(--pb);color:var(--pc);border:1.5px solid var(--pr);box-shadow:0 0 28px var(--pr);font:800 clamp(18px,5vw,26px)/1.2 system-ui,"Segoe UI",Tahoma,sans-serif;opacity:0}
 /* Training: AH / AL byte highlight on the 7-segment digits */
 #dsp svg.tkhl{outline:2px solid #ff9a1f;outline-offset:1px;border-radius:5px;background:#ff9a1f40;box-shadow:0 0 12px #ff9a1f;animation:tkP .8s ease-in-out infinite alternate}
+h1 .hr{display:flex;align-items:center;gap:8px}
+.pw{width:32px;height:32px;padding:0;border-radius:50%;border:1px solid #ff9a8a88;background:linear-gradient(#ff6a55,#c8281a);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 0 #7a140b,0 4px 8px #0006,inset 0 1px 0 #ffffff55;touch-action:manipulation;transition:transform .06s,box-shadow .06s,filter .12s}
+.pw svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.pw:hover{filter:brightness(1.12)}.pw:active{transform:translateY(2px);box-shadow:0 0 0 #7a140b,inset 0 1px 0 #ffffff33}
+.pw:focus-visible{outline:2px solid var(--am);outline-offset:2px}
+[data-theme=light] .pw{border-color:#c9b3f588;background:linear-gradient(#a98af0,#6d45cf);box-shadow:0 2px 0 #4a2a99,0 4px 8px #6a5aa845,inset 0 1px 0 #ffffff66}
+[data-theme=light] .pw:active{box-shadow:0 0 0 #4a2a99,inset 0 1px 0 #ffffff33}
+#dsp svg{transition:opacity .18s}#dsp.pof svg{opacity:.05}
+@media (max-width:400px){h1 .mk{font-size:clamp(16px,5.2vw,22px)}h1 .hr{gap:6px}h1 .hz{padding:4px 8px;font-size:11px}.pw{width:28px;height:28px}.pw svg{width:14px;height:14px}}
 </style></head><body><div id=tke-splash aria-hidden=true><img class=ic src=icons/icon-512.png alt=""><img class=tt src=splash/splash-title.svg alt="Trainer Kit Emulator for 8086 Microprocessor - By: Mustafa Aqeel"></div><main>
 <div class=tb id=tb><div class=by>By: Mustafa Aqeel</div><button class=t id=ttm type=button aria-label="Training Mode" aria-pressed=false title="Training Mode"><svg class=tmi viewBox="0 0 64 64" aria-hidden=true><path d="M32 12 60 26 32 40 4 26Z"/><path d="M16 33v11c0 4 7 8 16 8s16-4 16-8V33"/><path d="M56 28v14"/></svg><span class=tml>Training</span></button><button class=t id=tth aria-label=Theme title=Theme><span class=ti-l>&#9728;&#65038;</span><span class=ti-d>&#9790;</span></button><button class=t id=tmn aria-label=Menu aria-expanded=false>&#9776;</button><div id=tmp hidden><button class=t id=tfz></button><div id=tfw hidden><i>A</i><input type=range id=tfr min=80 max=160 step=5 value=100><b>A</b></div><button class=t id=tsn></button><button class=t id=tlg></button><div id=tmq><button class=t id=tq1 type=button>&#127760;</button><button class=t id=tq2 type=button>Aa</button><button class=t id=tq3 type=button></button></div><div id=tmv></div><button class=t id=tin hidden data-ar="📲 تثبيت">📲 Install</button><button class=t id=tex data-ar="&#11015; تصدير">&#11015; Export</button><button class=t id=tim data-ar="&#11014; استيراد">&#11014; Import</button><input type=file id=tfi accept=".json,application/json"></div></div>
 
 <section class=kit>
-<h1><span class=mk>KITEK M86-01</span><span class=hz>5 MHz</span><span class=cp>8086 MICROPROCESSOR TRAINER KIT</span></h1>
+<h1><span class=mk>KITEK M86-01</span><span class=hr><span class=hz>5 MHz</span><button class=pw id=pwr type=button title="Power: clears memory and registers" aria-label="Power"><svg viewBox="0 0 24 24" aria-hidden=true><path d="M12 3v8"/><path d="M7.2 6.6a8 8 0 1 0 9.6 0"/></svg></button></span><span class=cp>8086 MICROPROCESSOR TRAINER KIT</span></h1>
 <div id=dsp></div>
 <div class=lb><span>ADDRESS DISPLAY</span><span>DATA DISPLAY</span></div>
-<div id=stat></div><div id=tmw><div class=tmc><svg class=tmr viewBox="0 0 124 138" role=img aria-label="TKE Bot"><defs><linearGradient id=tkh x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color=#f6faff /><stop offset=1 stop-color=#b4c8e8 /></linearGradient><radialGradient id=tkg><stop offset=0 stop-color=#7fd6ff stop-opacity=.8 /><stop offset=1 stop-color=#7fd6ff stop-opacity=0 /></radialGradient></defs><ellipse class=glow cx=50 cy=128 rx=28 ry=6 fill=url(#tkg) /><g class=bob><path d="M30 66q0-7 8-7h24q8 0 8 7l9 42q1 7-6 7H28q-7 0-6-7z" fill="#fff" stroke="#8ea8cf" stroke-width="2.5" stroke-linejoin="round"/><path d="M42 59l8 20 8-20z" fill="#3b78d8"/><circle cx=50 cy=70 r=2 fill=#7fd6ff /><path d="M42 59l-8 24 14-6zM58 59l8 24-14-6z" fill="#eaf1fb" stroke="#8ea8cf" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 77v38" stroke="#c6d3e6" stroke-width="2"/><circle cx=50 cy=92 r=1.8 fill=#8ea8cf /><circle cx=50 cy=103 r=1.8 fill=#8ea8cf /><rect x=30 y=88 width=15 height=15 rx=2.5 fill=#f1f6fd stroke=#b9c9df stroke-width=1.5 /><rect x=35 y=82 width=3 height=11 rx=1.5 fill=#ff7a2f /><rect x=56 y=88 width=13 height=9 rx=2 fill=#ffb13b /><path d="M59 92.5h7" stroke="#8a4b00" stroke-width="1.4" stroke-linecap="round"/><path d="M26 109h48" stroke="#5aa0ff" stroke-width="2" stroke-linecap="round" opacity=.7 /><path d="M32 68L24 90" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M32 68L24 90" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><rect x=5 y=84 width=17 height=24 rx=3 fill=#12305a stroke=#7fd6ff stroke-width=1.6 /><path d="M9 91h9M9 96h9M9 101h6" stroke="#7fd6ff" stroke-width="1.5" stroke-linecap="round"/><circle cx=23 cy=92 r=5 fill=#c9d8ef /><g class=arm><path d="M68 68L90 52" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M68 68L90 52" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><path class=ptr d="M93 50L118 31" stroke="#7fd6ff" stroke-width="3" stroke-linecap="round"/><circle class=ptr cx=118 cy=31 r=3.2 fill=#fff /><circle cx=92 cy=51 r=5 fill=#c9d8ef /></g><rect x=44 y=54 width=12 height=7 rx=2 fill=#6b86b3 /><circle cx=17 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><circle cx=83 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><rect x=20 y=12 width=60 height=44 rx=16 fill=url(#tkh) stroke=#6b86b3 stroke-width=2.5 /><rect x=27 y=19 width=46 height=30 rx=11 fill=#0b1a33 stroke=#2f6fd6 stroke-width=1.5 /><g class=eyes><rect x=35 y=28 width=9 height=11 rx=4 fill=#7fd6ff /><rect x=56 y=28 width=9 height=11 rx=4 fill=#7fd6ff /></g><path class=mth d="M43 44q7 5 14 0" stroke="#7fd6ff" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M50 12V5" stroke="#6b86b3" stroke-width="3" stroke-linecap="round"/><circle class=ant cx=50 cy=4 r=4 fill=#ffb13b /></g></svg><span class=tmn>TKE Bot</span></div><div class=tmb><div class=tmh><i></i><i></i><i></i><b></b><span id=tkc></span></div><div id=tmt></div><div id=tkln></div><div class=tmk><button id=tkp type=button></button><button id=tkb type=button></button><button id=tkhint type=button></button><button id=tkn type=button></button></div><div id=tkfin><button id=tklv type=button><svg viewBox="0 0 24 24" aria-hidden=true><rect x=3 y=14 width=5 height=7 rx=1.2 /><rect x=9.5 y=9 width=5 height=12 rx=1.2 /><rect x=16 y=4 width=5 height=17 rx=1.2 /></svg><span></span></button></div><i id=tkd aria-hidden=true><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=29 /><path pathLength=1 d="M19 33l9 9 17-19"/></svg></i></div></div>
+<div id=stat></div><div id=tmw><div class=tmc><svg class=tmr viewBox="0 0 124 138" role=img aria-label="TKE Bot"><defs><linearGradient id=tkh x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color=#f6faff /><stop offset=1 stop-color=#b4c8e8 /></linearGradient><radialGradient id=tkg><stop offset=0 stop-color=#7fd6ff stop-opacity=.8 /><stop offset=1 stop-color=#7fd6ff stop-opacity=0 /></radialGradient></defs><ellipse class=glow cx=50 cy=128 rx=28 ry=6 fill=url(#tkg) /><g class=bob><path d="M30 66q0-7 8-7h24q8 0 8 7l9 42q1 7-6 7H28q-7 0-6-7z" fill="#fff" stroke="#8ea8cf" stroke-width="2.5" stroke-linejoin="round"/><path d="M42 59l8 20 8-20z" fill="#3b78d8"/><circle cx=50 cy=70 r=2 fill=#7fd6ff /><path d="M42 59l-8 24 14-6zM58 59l8 24-14-6z" fill="#eaf1fb" stroke="#8ea8cf" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 77v38" stroke="#c6d3e6" stroke-width="2"/><circle cx=50 cy=92 r=1.8 fill=#8ea8cf /><circle cx=50 cy=103 r=1.8 fill=#8ea8cf /><rect x=30 y=88 width=15 height=15 rx=2.5 fill=#f1f6fd stroke=#b9c9df stroke-width=1.5 /><rect x=35 y=82 width=3 height=11 rx=1.5 fill=#ff7a2f /><rect x=56 y=88 width=13 height=9 rx=2 fill=#ffb13b /><path d="M59 92.5h7" stroke="#8a4b00" stroke-width="1.4" stroke-linecap="round"/><path d="M26 109h48" stroke="#5aa0ff" stroke-width="2" stroke-linecap="round" opacity=.7 /><path d="M32 68L24 90" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M32 68L24 90" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><rect x=5 y=84 width=17 height=24 rx=3 fill=#12305a stroke=#7fd6ff stroke-width=1.6 /><path d="M9 91h9M9 96h9M9 101h6" stroke="#7fd6ff" stroke-width="1.5" stroke-linecap="round"/><circle cx=23 cy=92 r=5 fill=#c9d8ef /><g class=arm><path d="M68 68L90 52" stroke="#8ea8cf" stroke-width="12" stroke-linecap="round"/><path d="M68 68L90 52" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/><path class=ptr d="M93 50L118 31" stroke="#7fd6ff" stroke-width="3" stroke-linecap="round"/><circle class=ptr cx=118 cy=31 r=3.2 fill=#fff /><circle cx=92 cy=51 r=5 fill=#c9d8ef /></g><rect x=44 y=54 width=12 height=7 rx=2 fill=#6b86b3 /><circle cx=17 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><circle cx=83 cy=34 r=7 fill=#ffb13b stroke=#c9791b stroke-width=1.5 /><rect x=20 y=12 width=60 height=44 rx=16 fill=url(#tkh) stroke=#6b86b3 stroke-width=2.5 /><rect x=27 y=19 width=46 height=30 rx=11 fill=#0b1a33 stroke=#2f6fd6 stroke-width=1.5 /><g class=eyes><rect x=35 y=28 width=9 height=11 rx=4 fill=#7fd6ff /><rect x=56 y=28 width=9 height=11 rx=4 fill=#7fd6ff /></g><path class=mth d="M43 44q7 5 14 0" stroke="#7fd6ff" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M50 12V5" stroke="#6b86b3" stroke-width="3" stroke-linecap="round"/><circle class=ant cx=50 cy=4 r=4 fill=#ffb13b /></g></svg><span class=tmn>TKE Bot</span></div><div class=tmb><div class=tmh><i></i><i></i><i></i><b></b><span id=tkc></span></div><div id=tmt></div><div id=tkln></div><div class=tmk><button id=tkp type=button></button><button id=tkb type=button></button><button id=tkcv type=button></button><button id=tkhint type=button></button><button id=tkn type=button></button></div><div id=tkfin><button id=tklv type=button><svg viewBox="0 0 24 24" aria-hidden=true><rect x=3 y=14 width=5 height=7 rx=1.2 /><rect x=9.5 y=9 width=5 height=12 rx=1.2 /><rect x=16 y=4 width=5 height=17 rx=1.2 /></svg><span></span></button></div><i id=tkd aria-hidden=true><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=29 /><path pathLength=1 d="M19 33l9 9 17-19"/></svg></i></div></div>
 <div class=lw><span id=lh>OUT 00h</span><div id=led title="Last byte written by OUT"></div></div>
 <div class=keys id=keys></div>
 </section>
@@ -470,7 +485,7 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 <li>Type <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd>, then <kbd>NEXT</kbd>.</li>
 <li>Type <kbd>B</kbd><kbd>4</kbd> <kbd>NEXT</kbd>, <kbd>A</kbd><kbd>A</kbd> <kbd>NEXT</kbd>, <kbd>C</kbd><kbd>C</kbd> <kbd>NEXT</kbd>.</li>
 <li>Press <kbd>TTY</kbd> to finish.</li>
-<li>Press <kbd>2</kbd> (GO), type <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd>, press <kbd>NEXT</kbd>, then <kbd>TTY</kbd>.</li>
+<li>Press <kbd>2</kbd> (GO), type <kbd>5</kbd><kbd>0</kbd><kbd>0</kbd>, then press <kbd>TTY</kbd>.</li>
 <li>It stops at CC. AX in the Registers card now shows AA00.</li>
 </ol></div></details>
 <details><summary>Edit memory (EB / EW)</summary><div><ol>
@@ -509,7 +524,7 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 <li>Press <kbd>TTY</kbd> to run. TTY before NEXT does nothing.</li>
 </ol>The program stops at CC (INT 3) or HLT. <kbd>RESET</kbd> stops it at any time and resets the registers. CS is 0000, so the address you type is the physical address.</div></details>
 <details><summary>Single step (ST)</summary><div><ol>
-<li>Choose the start: <kbd>REG</kbd>, <kbd>C</kbd> (IP), type the address, <kbd>TTY</kbd>. IP is 2000 after RESET.</li>
+<li>Choose the start: <kbd>REG</kbd>, <kbd>C</kbd> (IP), type the address, <kbd>TTY</kbd>. IP is 2000 after Power (RESET keeps the current value).</li>
 <li>Press <kbd>3</kbd> (ST) to run one instruction. The displays show the next IP and its opcode.</li>
 <li>Press ST again to continue and watch the Registers card change.</li>
 </ol></div></details>
@@ -520,7 +535,7 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 <li><kbd>NEXT</kbd> stores and shows the next register, <kbd>PRV</kbd> the previous one, <kbd>TTY</kbd> stores and exits.</li>
 </ol></div></details>
 <details><summary>Keys and displays</summary><div><ul>
-<li><b>Blue keys</b>: RESET, REG, NEXT (CRT), PRV (FILL at idle), TTY (.), B.S, INS, DEL, VCT (INTR) and F1-F3.</li>
+<li><b>Blue keys</b>: RESET, REG, NEXT (CRT), PRV (FILL at idle), TTY (.), B.S, INS, DEL, VCT (INTR) and F1-F3.</li><li><b>Power button</b> (red, next to 5 MHz): clears all memory and registers. <b>RESET</b> only restarts the monitor; memory, registers and flags are kept.</li>
 <li><b>Black keys</b>: hex digits 0-F. At idle they run EB, ER, GO, ST, IB, OB, MV, EW, IW, OW, BC and VR. (LS and PRG require physical external hardware, so they are disabled).</li>
 <li><b>Dot between the displays</b>: lights while an address or a register is being shown or edited.</li>
 <li><b>LEDs D7-D0</b>: the last byte written by an OUT instruction.</li>
@@ -535,7 +550,7 @@ main>:not(.kit):not(.tb){zoom:var(--fz,1)}
 <details><summary>Troubleshooting</summary><div><ul>
 <li><b>A key isn't working?</b> Always check the green status screen! It tells you exactly what mode you are in and what to press next.</li>
 <li><b>A black key types a digit instead of a command:</b> the kit is not idle. Press <kbd>RESET</kbd>.</li>
-<li><b>TTY does not run my program:</b> after GO you must type the address and press <kbd>NEXT</kbd> first.</li>
+<li><b>TTY does not run my program:</b> after GO you must type the start address first, then press <kbd>TTY</kbd>.</li>
 <li><b>The program never stops:</b> end your code with CC (INT 3), or press <kbd>RESET</kbd>.</li>
 </ul></div></details>
 </details>
