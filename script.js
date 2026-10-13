@@ -2,7 +2,8 @@ document.getElementById("tke-splash").onclick=function(){this.style.display="non
 
 const $=i=>document.getElementById(i),hx=(n,l)=>(n>>>0).toString(16).toUpperCase().padStart(l,'0');
 const M=new Uint8Array(1<<20),r=new Uint16Array(8),s=new Uint16Array(4);
-let ip=0x2000,F=2,ov,rp,md,rg,rm,ea,sg,op,q,led=0,run=0,ex='',vw=0,st='i',cmd='',buf='',adr=0x2000,ri=0,note='';
+let ip=0x2000,F=2,ov,rp,md,rg,rm,ea,sg,op,q,led=0,run=0,ex='',vw=0,st='i',cmd='',buf='',adr=0x2000,ri=0,lm=-1,lf=0,wc=0,wk=[],note='';
+const wr=a=>{a=(a&1048575)>>4;const j=wk.indexOf(a);if(j>=0)wk.splice(j,1);wk.push(a);wk.length>256&&wk.shift()};
 const io=new Uint8Array(65536);let bp=-1,bpk=0,wi=0,wv=[],tm='',pt=0,ci=0,mm=0,pq=0;
 const rdp=p=>{p&=65535;return p==0||p==128?led:io[p]},wrp=(p,v)=>{p&=65535;v&=255;io[p]=v;if(p==0||p==128)led=v};
 const pin=(p,w)=>w?rdp(p)|rdp(p+1)<<8:rdp(p),pout=(p,w)=>{wrp(p,r[0]);if(w)wrp(p+1,r[0]>>8)};
@@ -170,14 +171,13 @@ function ui(){let a,d,n=note;
  $('regs').innerHTML=RN.map((e,i)=>`<div>${e} <b>${hx(rget(i),4)}</b></div>`).join('')+(bp>=0?`<div>BRK <b>${hx(bp,4)}</b></div>`:'');
  $('fl').innerHTML=[['OF',2048],['DF',1024],['IF',512],['TF',256],['SF',128],['ZF',64],['AF',16],['PF',4],['CF',1]].map(e=>`<span class="${F&e[1]?'on':''}">${e[0]}</span>`).join('');
  [...$('led').children].forEach((e,i)=>e.classList.toggle('on',(led>>(7-i)&1)==1));
- const pa=A(s[1],ip);let hl=pa,bs=pa,h='';
- if(st=='addr')bs=adr;else if(st=='data'||st=='dmp')hl=bs=adr;else if(st=='cmp')hl=bs=wv[0]+ci;
- bs&=1048560;
- for(let i=0;i<128;i++){const p=bs+i;if(i%16==0)h+=(i?'\n':'')+hx(p,5)+': ';h+=(p==hl?'<b>'+hx(M[p],2)+'</b>':hx(M[p],2))+' '}
- $('mem').innerHTML=h}
+ if(!wc){if(st=='data'||st=='dmp'){lm=adr&1048575;wk=[];wr(lm);wr(lm+(st=='dmp'?15:cmd=='EW'?1:0))}else if(st=='cmp'){lm=(wv[0]+ci)&1048575;wk=[];wr(lm)}}
+ const hl=lm,rows=wk.length?[...wk].sort((a,b)=>a-b):[0,1,2,3,4,5,6,7];let h='',pv=-2;
+ rows.forEach(r=>{if(pv>=0&&r!=pv+1)h+='      \u22EE\n';pv=r;const bs=r<<4;h+=hx(bs,5)+': ';for(let i=0;i<16;i++){const p=bs+i;h+=(p==hl?'<b>'+hx(M[p],2)+'</b>':hx(M[p],2))+' '}h+='\n'});
+ $('mem').innerHTML=h.replace(/\n$/,'')}
 /* RESET restarts the monitor only: memory, registers and flags are kept. POWER clears everything. */
 function reset(){run=0;led=0;io.fill(0);wv=[];wi=0;tm='';st='i';cmd='';buf='';ex='';vw=0;pq=0;note=MON;ui()}
-function power(q){run=0;M.fill(0);r.fill(0);s.fill(0);r[4]=0x3FFE;ip=0x2000;F=2;adr=0x2000;bp=-1;bpk=0;pt=0;ci=0;mm=0;reset();
+function power(q){run=0;M.fill(0);r.fill(0);s.fill(0);r[4]=0x3FFE;ip=0x2000;F=2;adr=0x2000;lm=-1;lf=1;wk=[];bp=-1;bpk=0;pt=0;ci=0;mm=0;reset();
  if(!q){const d=$('dsp');d.classList.add('pof');clearTimeout(power.t);power.t=setTimeout(()=>d.classList.remove('pof'),450)}}
 function go(){run=1;(function t(){if(run){for(let i=0;i<40000&&run;i++)step();ui();if(run)setTimeout(t,0)}})()}
 function cm(){if(!buf)return;const x=parseInt(buf,16);if(st=='data')cmd=='EW'?ww(adr,x):wb(adr,x);else if(st=='regv')rset(ri,x);buf=''}
@@ -360,7 +360,7 @@ function ext(k,isHex){
 
 function ld(t){const b=($('hx').value.match(/[0-9a-f]{2}/gi)||[]).map(e=>parseInt(e,16)),a=parseInt($('ha').value,16);
  if(isNaN(a)){note='Type a load address first\n(hex, in the Load a program box)';$('ha').focus();return ui()}
- b.forEach((e,i)=>wb(a+i,e));adr=a;ip=a&65535;s[1]=0;st='i';cmd='';buf='';ex='';vw=0;run=0;note=(typeof t=='string'?t+'\n':'')+'Loaded '+b.length+' bytes at '+hx(a,4)+'\nRun: GO, '+hx(a,4)+', TTY';ui()}
+ b.forEach((e,i)=>wb(a+i,e));adr=a;wk=[];for(let q=0;q<b.length;q+=16)wr(a+q);if(b.length)wr(a+b.length-1);lm=a&1048575;lf=1;ip=a&65535;s[1]=0;st='i';cmd='';buf='';ex='';vw=0;run=0;note=(typeof t=='string'?t+'\n':'')+'Loaded '+b.length+' bytes at '+hx(a,4)+'\nRun: GO, '+hx(a,4)+', TTY';ui()}
 $('ld').onclick=ld;
 (()=>{const D=[['Sum 1\u201310','B8 00 00 B9 0A 00 01 C8 E2 FC A3 00 21 E6 80 CC'],
 ['Fibonacci','BF 40 20 B9 0C 00 B3 00 B0 01 88 05 47 88 C2 00 D8 88 D3 E2 F5 88 D8 E6 80 CC'],
@@ -652,7 +652,7 @@ var tmW=0;const tb=g('tb'),mp=g('tmp'),mn=g('tmn'),mo=o=>{mp.hidden=!o;mn.setAtt
 mn.onclick=e=>{e.stopPropagation();mo(mp.hidden)};document.addEventListener('click',e=>{if(!tb.contains(e.target))mo(false)});
 g('tth').onclick=()=>{const d=D.dataset.theme!='light';th(d?'light':'dark');thZ(d)};
 g('tfz').onclick=()=>{g('tfw').hidden=!g('tfw').hidden};g('tfr').oninput=e=>fz(e.target.value);
-g('tlg').onclick=()=>{setLang(LG=='ar'?'en':'ar');lgFx();lgZ()};
+g('tlg').onclick=()=>lgFx();
 let ac,sn=LS('m86s')!=='0';const sl2=()=>tl();
 const SV=p=>'<svg class=ic viewBox="0 0 24 24" aria-hidden=true>'+p+'</svg>',IT=SV('<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>'),IV=SV('<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/>'),IX=SV('<path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>'),FZ=v=>'<span class=fzW><span class=fzS><i>A</i><b>A</b></span><span class=fzP style="--p:'+Math.max(0,Math.min(100,(v-80)/.8))+'%">'+v+'%</span></span>';
 const beep=(f,d)=>{if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,r=ac.sampleRate;
@@ -696,11 +696,16 @@ let pr=0;const AT=[
 ['address (empty = clear)','العنوان (فارغ = مسح)'],['address (empty = IP)','العنوان (فارغ = IP)'],['INT type to hook','رقم INT للربط'],['handler (empty = unhook)','المعالج (فارغ = فك الربط)'],[' at ',' عند ']
 ].sort((a,b)=>b[0].length-a[0].length);
 const arS=()=>{const e=g('stat');let x=e.textContent;for(const[a,b]of AT)x=x.split(a).join(b);e.textContent=x};
-const u2=ui;ui=function(){u2();if(LG=='ar')arS();const t=performance.now(),hot=(k,v)=>{if(PV[k]!==undefined&&PV[k]!=v)TT[k]=t;PV[k]=v;const d=t-(TT[k]||-1e9);return d<W?d:-1};
+let lmS=-2;const LW=new Set;
+const u2=ui;ui=function(){const t=performance.now(),sp=A(s[2],r[4]);let ch=-1;const nr=new Set,ws=[];
+ for(let i=0;i<262144;i++)if(M[i]!==SH[i]){SH[i]=M[i];TT['m'+i]=t;if(!(i>=sp-16&&i<sp+64)){if(ch<0)ch=i;nr.add(i>>4);ws.push(i)}const j=RC.indexOf(i);if(j>=0)RC.splice(j,1);RC.unshift(i);RC.length>8&&RC.pop()}
+ wc=0;if(lf&&lm<0)LW.clear();if(!(lf&&lm<0)&&nr.size){wc=1;if(!pr)LW.clear();ws.forEach(a=>LW.add(a));if(!pr&&!lf)wk=[];[...nr].sort((a,b)=>a-b).forEach(r=>wr(r<<4))}
+ if(ch>=0&&!lf)lm=ch;if(lm>=0&&(ch>=0||lf))wr(lm);lf=0;
+ u2();if(LG=='ar')arS();const hot=(k,v)=>{if(PV[k]!==undefined&&PV[k]!=v)TT[k]=t;PV[k]=v;const d=t-(TT[k]||-1e9);return d<W?d:-1};
  [...g('regs').children].forEach((e,i)=>{if(i<RN.length){const d=hot('r'+i,rget(i));if(d>=0)e.lastChild.style.animation=an(d)}});
  [...g('fl').children].forEach((e,i)=>{const d=hot('f'+i,F&FM[i]?1:0);if(d>=0)e.style.animation=an(d)});
- for(let i=0;i<262144;i++)if(M[i]!==SH[i]){SH[i]=M[i];TT['m'+i]=t;const j=RC.indexOf(i);if(j>=0)RC.splice(j,1);RC.unshift(i);RC.length>8&&RC.pop()}
- const m=g('mem');m.innerHTML=m.innerHTML.replace(/^([0-9A-F]{5}): (.*)$/gm,(z,a,x)=>{let i=0;return a+': '+x.replace(/(?:<b>)?[0-9A-F]{2}(?:<\/b>)? /g,y=>{const d=t-(TT['m'+(parseInt(a,16)+i++)]||-1e9);return d<W?'<i style="animation:'+an(d)+'">'+y.slice(0,-1)+'</i> ':y})});
+ const mk=!wc&&(st=='data'||st=='dmp'||st=='cmp')?null:LW,m=g('mem');m.innerHTML=m.innerHTML.replace(/^([0-9A-F]{5}): (.*)$/gm,(z,a,x)=>{let i=0;return a+': '+x.replace(/(?:<b>)?[0-9A-F]{2}(?:<\/b>)? /g,y=>{const p=parseInt(a,16)+i++,d=t-(TT['m'+p]||-1e9),z=mk&&mk.has(p)&&y[0]!='<'?'<u>'+y.slice(0,-1)+'</u> ':y;return d<W?'<i style="animation:'+an(d)+'">'+z.slice(0,-1)+'</i> ':z})});
+ if(lm!==lmS){lmS=lm;const bb=m.querySelector('b');if(bb)m.scrollTop=Math.max(0,bb.offsetTop-m.clientHeight/2)}
  if(pr&&!run)beep(880,.15);pr=run};
 /* assembly error lines + examples */
 const t=g('asm'),eb=document.createElement('div');eb.id='eb';t.parentNode.appendChild(eb);let er=[];
@@ -732,25 +737,37 @@ const AG=[
 ['تشغيل برنامج (GO)',`<ol><li>اضغط <kbd>2</kbd> (GO).</li><li>اكتب عنوان البداية.</li><li>اضغط <kbd>TTY</kbd> للتشغيل مباشرة (بدون NEXT).</li></ol>يتوقف البرنامج عند CC (INT 3) أو HLT، و<kbd>RESET</kbd> يوقفه في أي وقت.`],
 ['التنفيذ خطوة بخطوة (ST)',`<ol><li>حدّد البداية: <kbd>REG</kbd> ثم <kbd>C</kbd> (IP) ثم العنوان ثم <kbd>TTY</kbd> (قيمة IP بعد Power هي 2000، و RESET يُبقي القيمة الحالية).</li><li>اضغط <kbd>3</kbd> (ST) لتنفيذ تعليمة واحدة.</li><li>كرر ST وراقب تغيّر بطاقة السجلات.</li></ol>`],
 ['السجلات (REG / ER)',`<ol><li>اضغط <kbd>REG</kbd> (أو <kbd>1</kbd> في وضع الخمول).</li><li>اضغط مفتاح السجل: 0 AX، 1 BX، 2 CX، 3 DX، 4 SP، 5 BP، 6 SI، 7 DI، 8 CS، 9 DS، A SS، B ES، C IP، D FL.</li><li>اكتب حتى 4 خانات لتغيير القيمة؛ <kbd>NEXT</kbd>/<kbd>PRV</kbd> للتنقل و<kbd>TTY</kbd> للحفظ والخروج.</li></ol>`],
-['المفاتيح والشاشات',`<ul><li><b>الزرقاء</b>: RESET وREG وNEXT وPRV وTTY وB.S وINS وDEL وVCT وF1-F3.</li><li><b>زر Power</b> (الأحمر بجانب 5 MHz): يمسح الذاكرة والسجلات كلها. أما <b>RESET</b> فيعيد تشغيل المراقب فقط وتبقى الذاكرة والسجلات والأعلام كما هي.</li><li><b>السوداء</b>: أرقام 0-F، وفي الخمول تنفّذ الأوامر.</li><li><b>LEDs D7-D0</b>: آخر بايت كتبته تعليمة OUT.</li><li><b>لوحة المفاتيح</b>: 0-9 وA-F، Enter = NEXT، Backspace = B.S، - = PRV، . = TTY، G = GO، Esc = RESET، V = VCT.</li></ul>`],
+['المفاتيح والشاشات',`<ul><li><b>الزرقاء</b>: RESET وREG وNEXT وPRV وTTY وB.S وINS وDEL وVCT وF1-F3.</li><li><b>زر Power</b> (الأحمر بجانب 5 MHz): يمسح الذاكرة والسجلات كلها (وفي وضع التدريب يعيدك أيضاً إلى الواجهة الرئيسية لاختيار المستوى). أما <b>RESET</b> فيعيد تشغيل المراقب فقط وتبقى الذاكرة والسجلات والأعلام كما هي.</li><li><b>السوداء</b>: أرقام 0-F، وفي الخمول تنفّذ الأوامر.</li><li><b>LEDs D7-D0</b>: آخر بايت كتبته تعليمة OUT.</li><li><b>لوحة المفاتيح</b>: 0-9 وA-F، Enter = NEXT، Backspace = B.S، - = PRV، . = TTY، G = GO، Esc = RESET، V = VCT.</li></ul>`],
 ['محرر Assembly',`<ol><li>اكتب كود 8086 وحدّد عنوان التحميل بـ ORG (مثل ORG 2000h).</li><li><b>تجميع</b> يترجم الكود ويحمّله في الذاكرة، ثم شغّله بـ GO.</li><li><b>تجميع وتشغيل</b> يفعل الاثنين (Ctrl+Enter)؛ أنهِ كودك بـ INT 3.</li><li>الأخطاء تظهر برقم السطر ويُظلَّل السطر بالأحمر؛ اضغط الخطأ للانتقال إليه.</li></ol>`],
 ['حل المشكلات',`<ul><li><b>مفتاح لا يعمل؟</b> راجع الشاشة الخضراء فهي توضح الوضع الحالي.</li><li><b>المفتاح الأسود يكتب رقماً:</b> الكيت ليس في الخمول، اضغط <kbd>RESET</kbd>.</li><li><b>TTY لا يشغّل البرنامج:</b> بعد GO اكتب عنوان البداية أولاً ثم اضغط <kbd>TTY</kbd>.</li><li><b>البرنامج لا يتوقف:</b> أنهِه بـ CC (INT 3) أو اضغط <kbd>RESET</kbd>.</li></ul>`]];
-function lgFx(){const e=document.querySelector('main'),ar=LG=='ar',rm=matchMedia('(prefers-reduced-motion:reduce)').matches,sg=ar?1:-1;
- if(!e.animate)return;
- if(lgFx.a)lgFx.a.forEach(x=>{try{x.cancel()}catch(_){}});
- const o=document.getElementById('lgo')||(()=>{const d=document.createElement('div');d.id='lgo';d.innerHTML='<i></i><b></b>';document.body.appendChild(d);return d})(),bd=o.querySelector('i'),pl=o.querySelector('b');
- pl.textContent=ar?'العربية':'English';pl.dir=ar?'rtl':'ltr';o.style.display='block';
- const E='cubic-bezier(.2,.7,.2,1)',A=[
-  e.animate(rm?[{opacity:.2},{opacity:1}]:[{opacity:.15,transform:'translateX('+sg*28+'px) scale(.98)'},{opacity:1,transform:'none'}],{duration:rm?350:620,easing:E,delay:rm?0:120}),
-  pl.animate(rm?[{opacity:0},{opacity:1,offset:.25},{opacity:1,offset:.7},{opacity:0}]:[{opacity:0,transform:'scale(.8)'},{opacity:1,transform:'scale(1)',offset:.25},{opacity:1,transform:'scale(1)',offset:.7},{opacity:0,transform:'scale(1.06)'}],{duration:rm?600:820,easing:'ease-out'})];
- if(!rm)A.push(bd.animate([{transform:'translateX('+(ar?'100vw':'-55vw')+')'},{transform:'translateX('+(ar?'-55vw':'100vw')+')'}],{duration:720,easing:'ease-in-out'}));
- else bd.style.display='none';
- lgFx.a=A;const done=()=>{if(lgFx.a===A){o.style.display='none';bd.style.display=''}};
- Promise.all(A.map(x=>x.finished)).then(done,()=>{})}
+function lgFx(){if(lgFx.b)return;const nl=LG=='ar'?'en':'ar',ar=nl=='ar',rm=matchMedia('(prefers-reduced-motion:reduce)').matches,
+ o=document.getElementById('lgo')||(()=>{const x=document.createElement('div');x.id='lgo';document.body.appendChild(x);return x})();
+ lgZ(nl);
+ if(rm||!o.animate){setLang(nl);return}
+ lgFx.b=1;
+ const T=1200,S0=260,SD=560,m=ar?1:-1,L=ar?'ابتثجحخدذرزسشصضطظعغفقكلمنهوي':'ABCDEFGHJKLMNPRSTUVWXYZ',N=10;
+ let ps='';for(let i=0;i<N;i++)ps+='<span class="pt'+(i%2?' w':'')+'">'+L[Math.floor(Math.random()*L.length)]+'</span>';
+ o.innerHTML='<div class="vl"></div><div class="cd"><div class="pl"><em>Aa</em><em>\u0639</em><u></u>'+ps+'<div class="kb"><span class="og">'+(ar?'Aa':'\u0639')+'</span><span class="ng">'+(ar?'\u0639':'Aa')+'</span></div></div><small dir="'+(ar?'rtl':'ltr')+'">'+(ar?'العربية':'English')+'</small></div>';
+ o.style.display='block';
+ const pl=o.querySelector('.pl'),dist=pl.clientWidth-72-16,s=ar?0:dist,e=ar?dist:0,cx=8+e+36,
+ vl=o.querySelector('.vl'),cd=o.querySelector('.cd'),kb=o.querySelector('.kb'),og=o.querySelector('.og'),ng=o.querySelector('.ng'),rg=o.querySelector('u'),sm=o.querySelector('small');
+ rg.style.left=(8+e)+'px';
+ vl.animate([{opacity:0},{opacity:1,offset:.2},{opacity:1,offset:.84},{opacity:0}],{duration:T,fill:'both'});
+ cd.animate([{opacity:0,transform:'scale(.55) translateY(24px)',easing:'cubic-bezier(.2,.9,.3,1.3)'},{opacity:1,transform:'none',offset:.25},{opacity:1,transform:'none',offset:.83,easing:'ease-in'},{opacity:0,transform:'scale(.9)'}],{duration:T,fill:'both'});
+ kb.animate([{transform:'translateX('+s+'px) scale(1,1)'},{transform:'translateX('+(s+e)/2+'px) scale(1.3,.85)',offset:.45},{transform:'translateX('+(e+10*m)+'px) scale(.95,1.06)',offset:.8},{transform:'translateX('+e+'px) scale(1,1)'}],{duration:SD,delay:S0,easing:'cubic-bezier(.55,0,.25,1)',fill:'both'});
+ og.animate([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.2) rotate('+90*m+'deg)'}],{duration:150,delay:S0+170,fill:'both'});
+ ng.animate([{opacity:0,transform:'scale(.2) rotate('+-90*m+'deg)'},{opacity:1,transform:'none'}],{duration:320,delay:S0+330,easing:'cubic-bezier(.2,.9,.3,1.5)',fill:'both'});
+ rg.animate([{opacity:.9,transform:'scale(.9)'},{opacity:0,transform:'scale(2.4)'}],{duration:520,delay:S0+SD-80,easing:'ease-out',fill:'both'});
+ sm.animate([{opacity:0,transform:'translateY(12px)'},{opacity:.9,transform:'none'}],{duration:300,delay:S0+SD-40,easing:'ease-out',fill:'both'});
+ o.querySelectorAll('.pt').forEach((el,i)=>{const an=(i/N+Math.random()*.08)*Math.PI*2,dist2=70+Math.random()*90,sc=.8+Math.random()*.9,rt=(Math.random()-.5)*160;
+  el.style.left=cx+'px';
+  el.animate([{opacity:0,transform:'translate(0,0) scale(.3)'},{opacity:1,offset:.2},{opacity:0,transform:'translate('+Math.cos(an)*dist2+'px,'+Math.sin(an)*dist2+'px) scale('+sc+') rotate('+rt+'deg)'}],{duration:620,delay:S0+SD-60+Math.random()*60,easing:'cubic-bezier(.1,.7,.3,1)',fill:'both'})});
+ setTimeout(()=>setLang(nl),320);
+ setTimeout(()=>{o.style.display='none';o.innerHTML='';lgFx.b=0},T+60)}
 function setLang(l){LG=l;LS('m86l',l);D.lang=l;D.classList.toggle('ar',l=='ar');const a=l=='ar',o0=document.querySelector('#exs option');if(o0)o0.textContent=a?'أمثلة…':'Examples…';
  t.dataset.pe=t.dataset.pe||t.placeholder;t.placeholder=a?'; اكتب كود 8086 هنا':t.dataset.pe;
  document.querySelectorAll('.lg>details').forEach((d,i)=>{d.dataset.en=d.dataset.en||d.innerHTML;d.innerHTML=a?'<summary>'+AG[i][0]+'</summary><div>'+AG[i][1]+'</div>':d.dataset.en});tl();ui();tmLb()}
-function tmLb(){if(!PL)return;const a=LG=='ar',q=PL.it.k=='q',kb=g('tkb');kb.textContent=a?'\u203A':'\u2039';kb.title=a?'خطوة للخلف':'Back one step';kb.setAttribute('aria-label',kb.title);g('tkn').textContent=q?'\u2713':(a?'\u2039':'\u203A');tmGo(PL);tmCv(PL)}
+function tmLb(){if(!PL)return;const a=LG=='ar',q=PL.it.k=='q',kb=g('tkb');kb.textContent=a?'\u203A':'\u2039';kb.title=a?'خطوة للخلف':'Back one step';kb.setAttribute('aria-label',kb.title);tkQz(PL,a);if(PL.nx)tkNq(PL);tmGo(PL);tmCv(PL)}
 function tl(){const a=LG=='ar';document.querySelectorAll('[data-ar]').forEach(e=>{e.dataset.en=e.dataset.en||e.textContent;e.textContent=a?e.dataset.ar:e.dataset.en});
  g('tsn').innerHTML=(sn?IV:IX)+(sn?(a?'الصوت':'Sound'):(a?'صامت':'Muted'));g('tlg').innerHTML=IT+(a?'English':'العربية');g('pwr').title=a?'Power: مسح الذاكرة والسجلات':'Power: clears memory and registers';g('pwr').setAttribute('aria-label',g('pwr').title);
  g('tfz').innerHTML=FZ(g('tfr').value);g('tfz').title=(a?'حجم الخط ':'Text size ')+g('tfr').value+'%';tmL()}
@@ -773,83 +790,313 @@ g('tq2').onclick=()=>g('tfz').click();
 g('tq3').onclick=()=>{g('tsn').click();tmX()};
 function tmX(){const a=LG=='ar',s=(e,t)=>{e.title=t;e.setAttribute('aria-label',t)};
  s(g('tq1'),a?'English':'العربية');s(g('tq2'),(a?'حجم الخط ':'Text size ')+g('tfr').value+'%');s(g('tq3'),sn?(a?'الصوت يعمل':'Sound on'):(a?'الصوت صامت':'Sound muted'));g('tq3').innerHTML=sn?IV:IX;g('tq1').innerHTML=IT;g('tq2').innerHTML=FZ(g('tfr').value);
- g('tklv').lastElementChild.textContent=a?'المستويات':'Levels';g('tklv').setAttribute('aria-label',a?'المستويات':'Levels');g('tmv').innerHTML=TV?tmI(a):Array.from({length:10},(_,i)=>{const n=i+1,o=n<=TO;return '<button type=button class="lv'+(o?' cur':'')+'" data-n='+n+(o?'':' disabled')+'><span class=n>'+n+'</span><span class=tx><b>'+(a?'المستوى ':'Level ')+n+'</b><i>'+(o?(n<TO?(a?'مكتمل':'Done'):(a?'ابدأ من هنا':'Start here')):(a?'مقفل':'Locked'))+'</i></span><span class=st>'+(o?(n<TO?'\u2713':'\u25B6'):'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/><circle class="lf" cx="12" cy="15.5" r="1.3"/></svg>')+'</span></button>'}).join('');if(TM&&!tmb&&tmLg!=LG){tmLg=LG;PL?tmSt():tmG()}}
-const TG={en:"Hi! I'm TKE Bot. Open the levels menu (\u2630) and pick the level that suits you. I'll help you step by step.",ar:'أهلاً! أنا TKE Bot. افتح قائمة المستويات (\u2630) واختر المستوى المناسب لك، وسأساعدك خطوة بخطوة.'};
+ g('tklv').lastElementChild.textContent=a?'المستويات':'Levels';g('tklv').setAttribute('aria-label',a?'المستويات':'Levels');g('tmv').innerHTML=TV?tmI(a):Array.from({length:10},(_,i)=>{const n=i+1,o=n<=TO;return '<button type=button class="lv'+(o?(n<TO?' dn':' cur'):'')+'" data-n='+n+(o?'':' disabled')+'><span class=n>'+n+'</span><span class=tx><b>'+(a?'المستوى ':'Level ')+n+'</b><i>'+(o?(n<TO?(a?'مكتمل':'Done'):(n==1?(a?'هيا نبدأ':"Let's begin"):(a?'أكمل':'Continue'))):(a?'مقفل':'Locked'))+'</i></span><span class=st>'+(o?(n<TO?tkCk():'\u25B6'):'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/><circle class="lf" cx="12" cy="15.5" r="1.3"/></svg>')+'</span></button>'}).join('');if(TM&&!tmb&&tmLg!=LG){tmLg=LG;PL?tmSt():tmG()}}
+const TG={en:"Hi!\u00a0I'm TKE Bot. Open the levels menu (\u2630) and pick the level that suits you. I'll help you step by step.",ar:'أهلاً!\u00a0أنا TKE Bot. افتح قائمة المستويات (\u2630) واختر المستوى المناسب لك، وسأساعدك خطوة بخطوة.'};
 /* welcome: the menu button (or the level list, once the menu is open) glows orange until a level is chosen */
 function tmWg(){const w=!!tmW&&TM;mn.classList.toggle('tkw',w&&mp.hidden);g('tmv').classList.toggle('tkw',w&&!mp.hidden)}
 function tmG(){g('tmw').classList.remove('fin');tmW=TV?0:1;tmWg();tmSay(TG[LG=='ar'?'ar':'en'])}
-function tmSay(s,cb,f){clearInterval(tmY);tmTy=1;const t=g('tmt'),r=document.querySelector('.tmr'),c=Array.from(s);let i=f||0;t.textContent=c.slice(0,i).join('');t.classList.add('ty');r.classList.add('say');tmY=setInterval(()=>{t.textContent=c.slice(0,++i).join('');t.scrollTop=t.scrollHeight;if(i>=c.length){clearInterval(tmY);tmTy=0;t.classList.remove('ty');r.classList.remove('say');cb&&cb()}},32)}
+/* TKE Bot text renderer: one sentence per line, step badges, label chips, code chips, separate hint block */
+const BR=/^(?:Step\s+(\d+)\s*:|⁦?(\d+)⁩?\s*\))\s*/,
+LB=/^(Question|Goal|Result|Task|Objective|Note|Next|Last one|Hint|تلميح|السؤال|الهدف|النتيجة|المهمة|ملاحظة|التالي|الأخيرة)\s*:\s*/,
+PC=/^[A-Z]{2,5}(?: [A-Z0-9\[\]+\-]+(?:,[A-Z0-9\[\]+\-]+)*)?$/,
+HX=/(^|[^\w])((?:[0-9A-F]{2} )+[0-9A-F]{2})(?![\w])/g,
+KY=/(^|[^\w\-\/<>])(RESET|NEXT|TTY|GO|EB|EW|ER|REG)(?![\w=\-\/])/g,
+esc=x=>x.replace(/[&<>]/g,c=>'&#'+c.charCodeAt(0)+';'),
+spl=x=>x.replace(/([.!?؟])[ \t]+(?=\S)/g,(m,c,o)=>x.slice(Math.max(0,o-3),o)=='Fig'?m:c+'\n'),
+fmt=x=>esc(x).split(/(\u0002[^\u0003]*\u0003?)/).map((p,i)=>i%2?(c=>'<code class="cd'+(/[a-z]{3,}|[\u0600-\u06FF]/.test(c)?' w':'')+'">'+c+'</code>')(p.replace(/[\u0002\u0003]/g,'')):p.replace(HX,'$1<code>$2</code>').replace(KY,'$1<b class=kk>$2</b>')).join('');
+function tmBk(x,lead){let o='',k=0;
+ x.split('\n').forEach(L=>{
+  if(!L.trim()&&!(lead&&!k))return;
+  let b='',m,lb='';
+  if(m=BR.exec(L)){b=m[1]||m[2];L=L.slice(m[0].length)}
+  else if(m=/^\s*•\s*/.exec(L)){b='•';L=L.slice(m[0].length)}
+  if(m=LB.exec(L)){lb='<b class="tlb'+(/^(Hint|تلميح)$/.test(m[1])?' h':'')+'">'+esc(m[1])+'</b>';L=L.slice(m[0].length)}
+  const bl=b=='•';
+  spl(L).split('\n').forEach((q,j)=>{
+   const z=q.replace(/[⁦⁩]/g,''),pc=PC.test(z);
+   o+='<div class="tl'+(j?(b&&!bl?' c':''):(k&&!bl?' n':''))+(pc?' pc':'')+'">'+(!j&&b?'<i class="sb'+(bl?' bd':'')+'">'+b+'</i>':'')+'<span class=tx>'+(!j?(lead&&!k?lead:'')+lb:'')+(pc?'<code class=cd>'+esc(z)+'</code>':fmt(q))+'</span></div>'});
+  k++});
+ return o}
+function tmRn(el,s){const ar=LG=='ar',p=s.split('\u0001');
+ let h=tmBk(p[0]);
+ if(p.length>1)h+='<div class=thn>'+tmBk(p[1].replace(/^\s*(Hint|تلميح)\s*:\s*/,''),'<b class=tlb>'+(ar?'تلميح':'Hint')+'</b>')+'</div>';
+ el.innerHTML=h||'<div class=tl><span class=tx></span></div>';
+ const x=el.querySelectorAll('.tx');if(x.length)x[x.length-1].classList.add('lst')}
+/* a step's leading label (Goal, Task, Next...) is shown in the fixed badge above TKE Bot instead of inside the text */
+function tmLm(x){return /^\s*\u2066?(Goal|Result|Task|Objective|Note|Next|Last one|الهدف|النتيجة|المهمة|ملاحظة|التالي|الأخيرة)\u2069?\s*:\s*/.exec(x)}
+function tmUc(x){return LG=='ar'?x:x.replace(/^[a-z]/,c=>c.toUpperCase())}
+function tmLs(x){const m=tmLm(x);return m?tmUc(x.slice(m[0].length)):x}
+function tmSay(s,cb,f){clearInterval(tmY);tmTy=1;const t=g('tmt'),r=document.querySelector('.tmr'),kk=g('tkk'),m=tmLm(s);let n=0;if(m){n=m[0].length;s=tmUc(s.slice(n))}if(kk)kk.textContent=m?m[1]:(kk.dataset.l||'');const c=Array.from(s);let i=Math.max(0,(f||0)-n);t._h=0;tmRn(t,c.slice(0,i).join(''));t.classList.add('ty');r.classList.add('say');tmY=setInterval(()=>{tmRn(t,c.slice(0,++i).join(''));if(!t._h)t.scrollTop=t.scrollHeight;if(i>=c.length){clearInterval(tmY);tmTy=0;t.classList.remove('ty');r.classList.remove('say');cb&&cb()}},32)}
+(function(){const t=g('tmt');if(!t)return;let y0=0;const u=()=>{const d=t.scrollHeight-t.scrollTop-t.clientHeight;t.classList.toggle('mu',t.scrollTop>3);t.classList.toggle('md',d>3);if(d<4)t._h=0};t.addEventListener('wheel',e=>{if(e.deltaY<0)t._h=1},{passive:true});t.addEventListener('touchstart',e=>{y0=e.touches[0].clientY},{passive:true});t.addEventListener('touchmove',e=>{if(e.touches[0].clientY>y0+4)t._h=1},{passive:true});t.addEventListener('scroll',u,{passive:true});new MutationObserver(u).observe(t,{childList:true,subtree:true,characterData:true});addEventListener('resize',u);u()})();
 window.tkeSay=tmSay;
 const LV={
 1:[{k:'c',t:['The 8086 chip','شريحة 8086'],s:[['The 8086 is a 40-pin processor that runs assembly programs.','معالج 8086 شريحة بـ40 رجلاً تنفذ برامج لغة التجميع.',''],['It works with the 8279, 8255 and 8087 chips for keyboard, display and I/O.','يعمل مع الشرائح 8279 و8255 و8087 للوحة المفاتيح والعرض والإدخال والإخراج.','']]},
 {k:'c',t:['Keyboard','لوحة المفاتيح'],s:[['16 hex keys (0-F) enter addresses and data.','16 مفتاحاً سداسياً (0-F) لإدخال العناوين والبيانات.','0 1 2 3 4 5 6 7 8 9 A B C D E F'],['12 function keys edit, control and run, like RESET, INS, DEL, REG, NEXT and TTY.','12 مفتاحاً وظيفياً للتحرير والتحكم والتشغيل مثل RESET وINS وDEL وREG وNEXT وTTY.','FKEYS']]},
 {k:'c',t:['Main commands','أهم الأوامر'],s:[['RESET restarts the kit and shows the sign-on message.','RESET يعيد تشغيل الكيت ويعرض رسالة البداية.','RESET'],['EB / EW examine a byte / word of memory. ER examines a register.','EB وEW لفحص بايت أو كلمة من الذاكرة، وER لفحص مسجّل.','EB EW ER'],['NEXT moves to the data field, then to the next address.','NEXT ينقلك إلى حقل البيانات ثم إلى العنوان التالي.','NEXT'],['GO runs a program: GO, address, then TTY.','GO لتشغيل برنامج: GO ثم العنوان ثم TTY.','GO TTY']]},
 {k:'c',t:['Display and memory','الشاشة والذاكرة'],s:[['8 seven-segment digits: 4 show the address, 4 show the data, all in hex.','8 خانات سباعية: 4 للعنوان و4 للبيانات، كلها بالنظام السداسي.','DSP'],['RAM starts at 00000. At RESET the 8086 jumps to FFFF0, the monitor ROM.','الذاكرة RAM تبدأ من 00000، وعند RESET ينتقل المعالج إلى FFFF0 وهو برنامج المراقب.','']]},
-{k:'c',t:['Registers','المسجلات'],s:[['Registers are small memory cells inside the 8086. General ones: AX accumulator, BX base, CX count, DX data.','المسجلات خلايا صغيرة داخل المعالج 8086. العامة منها: AX المجمّع وBX القاعدة وCX العدّاد وDX البيانات.','r:AX r:BX r:CX r:DX 0 1 2 3'],
-['Pointers and indexes: SP stack pointer, BP base pointer, SI source index, DI destination index.','المؤشرات والفهارس: SP مؤشر المكدس وBP مؤشر القاعدة وSI فهرس المصدر وDI فهرس الوجهة.','r:SP r:BP r:SI r:DI 4 5 6 7'],
-['Segment registers: CS code, DS data, SS stack, ES extra.','مسجلات المقاطع: CS الشيفرة وDS البيانات وSS المكدس وES الإضافي.','r:CS r:DS r:SS r:ES 8 9 A B'],
-['Also IP, the instruction pointer, and FL, the flags.','ومعها IP مؤشر التعليمات وFL الأعلام.','r:IP r:FL C D'],
+{k:'c',t:['Registers','المسجلات'],s:[['Registers are small memory cells inside the 8086 that hold data while a program runs.','المسجلات خلايا ذاكرة صغيرة داخل المعالج 8086 تحتفظ بالبيانات أثناء تنفيذ البرنامج.',''],
 ['Reach a register: press RESET, then ER, then the key labelled AX (key 0).','للوصول إلى مسجل: اضغط RESET ثم ER ثم المفتاح المكتوب عليه AX وهو 0.','r:AX'],
 ['You are inside AX. The data digits show its 4 hex digits. The left two are AH, the high byte.','أنت الآن داخل AX. خانات البيانات تعرض أرقامه الأربعة. الخانات على اليسار هي AH وهو البايت العلوي.','r:AX dh'],
 ['The right two digits are AL, the low byte. BX, CX and DX split the same way.','الخانات على اليمين هي AL وهو البايت السفلي. وBX وCX وDX تنقسم بالمثل.','r:AX r:BX r:CX r:DX dl'],
 ['Set it directly: type 1234, then NEXT to save it in AX.','لوضع قيمة مباشرة: اكتب 1234 ثم NEXT لحفظها في AX.','r:AX'],
 ['Press TTY to leave. AX = 1234, with no program or memory needed.','اضغط TTY للخروج. صار AX = 1234 دون برنامج ولا ذاكرة.','r:AX']]},
-{k:'e',t:['Example 1: AABB into AX','مثال 1: وضع AABB في AX'],s:[['Goal: store AABB in register AX. Write the program in memory at 400.','الهدف: خزّن القيمة AABB في المسجل AX، بكتابة برنامج في الذاكرة عند العنوان 400.','r:AX'],['Step 1: switch the kit on, then press RESET.','1) شغّل الكيت ثم اضغط RESET.','RESET'],['Step 2: press EB, then type the address 400.','2) اضغط EB ثم اكتب العنوان 400.','EB 0 4'],['Step 3: press NEXT to open the data field.','3) اضغط NEXT لفتح حقل البيانات.','NEXT'],['Step 4: type ⟦B8|MOV AX,AABB⟧, then NEXT. The address moves to 00401.','4) اكتب ⟦B8|MOV AX,AABB⟧ ثم NEXT فينتقل العنوان إلى 00401.','B 8 NEXT'],['Step 5: type ⟦BB, NEXT, then AA|the value AABB, low byte first⟧, NEXT.','5) اكتب ⟦BB ثم NEXT ثم AA|القيمة AABB بالبايت الأدنى أولاً⟧ ثم NEXT.','B A NEXT'],['Step 6: type ⟦CC|HLT⟧, then NEXT. The program is stored.','6) اكتب ⟦CC|HLT⟧ ثم NEXT فيُحفظ البرنامج.','F 4 NEXT'],['Step 7: press RESET, then GO, and type 400.','7) اضغط RESET ثم GO ثم اكتب 400.','RESET GO 0 4'],['Step 8: press TTY to run. AX now holds AABB.','8) اضغط TTY للتنفيذ فيصبح AX = AABB.','TTY r:AX']]},
-{k:'e',t:['Example 2: 45h into AL','مثال 2: 45h في AL'],s:[['Goal: store 45h in register AL. Write the program in memory at 600.','الهدف: خزّن القيمة 45h في المسجل AL، بكتابة برنامج في الذاكرة عند العنوان 600.','r:AX'],['Step 1: press EB, type 600, then NEXT.','1) اضغط EB واكتب 600 ثم NEXT.','EB 6 0 0 NEXT'],['Step 2: type ⟦B0, NEXT, 45, NEXT|MOV AL,45⟧, then ⟦CC, NEXT|HLT⟧. The program is stored.','2) اكتب ⟦B0 ثم NEXT ثم 45 ثم NEXT|MOV AL,45⟧ ثم ⟦CC ثم NEXT|HLT⟧ فيُحفظ البرنامج.','B 0 NEXT 4 5 NEXT C C NEXT'],['Step 3: press RESET, GO, then type 600.','3) اضغط RESET ثم GO ثم اكتب 600.','RESET GO 6 0 0'],['Step 4: press TTY to run. AL = 45, the low half of AX.','4) اضغط TTY للتنفيذ فيصبح AL = 45.','TTY r:AX']]},
-{k:'e',t:['Example 3: 6Ch into AH','مثال 3: 6Ch في AH'],s:[['Goal: store 6Ch in register AH. Write the program in memory at 500.','الهدف: خزّن القيمة 6Ch في المسجل AH، بكتابة برنامج في الذاكرة عند العنوان 500.','r:AX'],['Step 1: press EB, type 500, NEXT, then ⟦B4|MOV AH,6C⟧, NEXT.','1) اضغط EB واكتب 500 ثم NEXT ثم ⟦B4|MOV AH,6C⟧ ثم NEXT.','EB 5 0 0 NEXT B 4 NEXT'],['Step 2: type ⟦6C, NEXT, then CC, NEXT|the value 6C, then HLT⟧. The program is stored.','2) اكتب ⟦6C ثم NEXT ثم CC ثم NEXT|القيمة 6C ثم HLT⟧ فيُحفظ البرنامج.','6 C NEXT C C NEXT'],['Step 3: press RESET, GO, type 500, then TTY. AH = 6C.','3) اضغط RESET ثم GO ثم اكتب 500 ثم TTY فيصبح AH = 6C.','RESET GO 5 0 0 TTY r:AX']]},
+{k:'e',t:['Example 1: AABB into AX','مثال 1: وضع AABB في AX'],s:[['Goal: store AABB in register AX. Write the program in memory at 400.','الهدف: خزّن القيمة AABB في المسجل AX، بكتابة برنامج في الذاكرة عند العنوان 400.','r:AX'],['Step 1: switch the kit on, then press RESET.','1) شغّل الكيت ثم اضغط RESET.','RESET'],['Step 2: press EB, then type the address 400.','2) اضغط EB ثم اكتب العنوان 400.','EB 0 4'],['Step 3: press NEXT to open the data field.','3) اضغط NEXT لفتح حقل البيانات.','NEXT'],['Step 4: type ⟦B8|MOV AX,AABB⟧, then NEXT. The address moves to 00401.','4) اكتب ⟦B8|MOV AX,AABB⟧ ثم NEXT فينتقل العنوان إلى 00401.','B 8 NEXT'],['Step 5: type ⟦BB, NEXT, then AA|the value AABB, low byte first⟧, NEXT.','5) اكتب ⟦BB ثم NEXT ثم AA|القيمة AABB بالبايت الأدنى أولاً⟧ ثم NEXT.','B A NEXT'],['Step 6: type ⟦CC|HLT⟧, then NEXT. The program is stored.','6) اكتب ⟦CC|HLT⟧ ثم NEXT فيُحفظ البرنامج.','F 4 NEXT'],['Step 7: press TTY, then GO, and type 400.','7) اضغط TTY ثم GO ثم اكتب 400.','TTY GO 0 4'],['Step 8: press TTY to run. AX now holds AABB.','8) اضغط TTY للتنفيذ فيصبح AX = AABB.','TTY r:AX']]},
+{k:'e',t:['Example 2: 45h into AL','مثال 2: 45h في AL'],s:[['Goal: store 45h in register AL. Write the program in memory at 600.','الهدف: خزّن القيمة 45h في المسجل AL، بكتابة برنامج في الذاكرة عند العنوان 600.','r:AX'],['Step 1: press EB, type 600, then NEXT.','1) اضغط EB واكتب 600 ثم NEXT.','EB 6 0 0 NEXT'],['Step 2: type ⟦B0, NEXT, 45, NEXT|MOV AL,45⟧, then ⟦CC, NEXT|HLT⟧. The program is stored.','2) اكتب ⟦B0 ثم NEXT ثم 45 ثم NEXT|MOV AL,45⟧ ثم ⟦CC ثم NEXT|HLT⟧ فيُحفظ البرنامج.','B 0 NEXT 4 5 NEXT C C NEXT'],['Step 3: press TTY, GO, then type 600.','3) اضغط TTY ثم GO ثم اكتب 600.','TTY GO 6 0 0'],['Step 4: press TTY to run. AL = 45, the low half of AX.','4) اضغط TTY للتنفيذ فيصبح AL = 45.','TTY r:AX']]},
+{k:'e',t:['Example 3: 6Ch into AH','مثال 3: 6Ch في AH'],s:[['Goal: store 6Ch in register AH. Write the program in memory at 500.','الهدف: خزّن القيمة 6Ch في المسجل AH، بكتابة برنامج في الذاكرة عند العنوان 500.','r:AX'],['Step 1: press EB, type 500, NEXT, then ⟦B4|MOV AH,6C⟧, NEXT.','1) اضغط EB واكتب 500 ثم NEXT ثم ⟦B4|MOV AH,6C⟧ ثم NEXT.','EB 5 0 0 NEXT B 4 NEXT'],['Step 2: type ⟦6C, NEXT, then CC, NEXT|the value 6C, then HLT⟧. The program is stored.','2) اكتب ⟦6C ثم NEXT ثم CC ثم NEXT|القيمة 6C ثم HLT⟧ فيُحفظ البرنامج.','6 C NEXT C C NEXT'],['Step 3: press TTY, GO, type 500, then TTY. AH = 6C.','3) اضغط TTY ثم GO ثم اكتب 500 ثم TTY فيصبح AH = 6C.','TTY GO 5 0 0 TTY r:AX']]},
 {k:'x',t:['Exercise 1: AX values','تمرين 1: قيم AX'],s:[['Load DFA1 into AX, then run the program.','ضع DFA1 في AX ثم نفّذ البرنامج.','r:AX','Hint: B8 A1 DF CC.','تلميح: B8 A1 DF CC.','AX=DFA1'],['Now load 869B into AX the same way.','الآن ضع 869B في AX بنفس الطريقة.','r:AX','Hint: B8 9B 86 CC.','تلميح: B8 9B 86 CC.','AX=869B']]},
 {k:'x',t:['Exercise 2: AL and AH','تمرين 2: AL وAH'],s:[['Load 7B into AL and 8F into AH, then run it.','ضع 7B في AL و8F في AH ثم نفّذه.','r:AX','Hint: B0 7B, B4 8F, then CC.','تلميح: B0 7B وB4 8F ثم CC.','AX=8F7B']]},
 {k:'q',t:['Final test','الاختبار النهائي'],q:[['The kit has 16 hex keys and 12 function keys.','يحتوي الكيت على 16 مفتاحاً سداسياً و12 مفتاحاً وظيفياً.',true],['Registers are small, fast storage cells inside the CPU that temporarily hold data and addresses.','المسجلات (Registers) خلايا تخزين صغيرة وسريعة داخل المعالج تحتفظ مؤقتاً بالبيانات والعناوين.',true],['B8 BB AA loads AABB into BX.','الأمر B8 BB AA يضع AABB في BX.',false,'B8 is MOV AX, so AABB goes into AX, not BX.','الأمر B8 هو MOV AX، فتُخزَّن AABB في AX وليس BX.']]}],
 2:[{k:'c',t:['16-bit and 8-bit','16 بت و8 بت'],s:[['Each 16-bit register splits into two 8-bit halves: AX = AH + AL.','كل مسجل 16 بت ينقسم إلى نصفين 8 بت: AX = AH + AL.','r:AX'],['The same for BX, CX and DX: the general-purpose registers.','وكذلك BX وCX وDX وهي المسجلات العامة.','r:BX r:CX r:DX']]},
-{k:'c',t:['Register roles','وظائف المسجلات'],s:[['AX accumulator, BX base, CX count, DX data.','AX المجمّع وBX القاعدة وCX العدّاد وDX البيانات.','r:AX r:BX r:CX r:DX'],['SP, BP, SI, DI are pointers and indexes. IP points to the next instruction.','SP وBP وSI وDI مؤشرات وفهارس، وIP يشير للتعليمة التالية.','r:SP r:BP r:SI r:DI r:IP'],['CS, DS, SS, ES hold segment addresses.','CS وDS وSS وES تحمل عناوين المقاطع.','r:CS r:DS r:SS r:ES']]},
+{k:'c',t:['Register roles','وظائف المسجلات'],s:[['AX accumulator, BX base index, CX count, DX data. Their keys are 0, 1, 2 and 3.','AX المجمّع وBX القاعدة وCX العدّاد وDX البيانات، ومفاتيحها 0 و1 و2 و3.','r:AX r:BX r:CX r:DX 0 1 2 3'],['SP stack pointer, BP base pointer, SI source index, DI destination index (keys 4, 5, 6, 7). IP is the instruction pointer (key C) and FL the flags (key D).','SP مؤشر المكدس وBP مؤشر القاعدة وSI فهرس المصدر وDI فهرس الوجهة (المفاتيح 4 و5 و6 و7). وIP مؤشر التعليمات (المفتاح C) وFL الأعلام (المفتاح D).','r:SP r:BP r:SI r:DI r:IP r:FL 4 5 6 7 C D'],['Segment registers hold segment addresses: CS code, DS data, SS stack, ES extra (keys 8, 9, A, B).','مسجلات المقاطع تحمل عناوين المقاطع: CS للشيفرة وDS للبيانات وSS للمكدس وES للإضافي (المفاتيح 8 و9 وA وB).','r:CS r:DS r:SS r:ES 8 9 A B']]},
 {k:'c',t:['Memory order','ترتيب الذاكرة'],s:[['A 16-bit value is stored low byte first: AB at 500 and 7D at 501 make 7DAB.','القيمة 16 بت تُخزّن بالبايت الأدنى أولاً: AB عند 500 و7D عند 501 تعطي 7DAB.','']]},
-{k:'e',t:['Example 1: memory to CX to AX','مثال 1: من الذاكرة إلى CX ثم AX'],s:[['Goal: copy memory 500-501 into CX, then into AX. Data: AB at 500, 7D at 501.','الهدف: نسخ الذاكرة 500-501 إلى CX ثم AX. البيانات: AB عند 500 و7D عند 501.','r:CX r:AX'],['Step 1: press EB, type 500, press NEXT.','1) اضغط EB واكتب 500 ثم NEXT.','EB 0 5 NEXT'],['Step 2: type AB, NEXT, then 7D, NEXT. The data is stored.','2) اكتب AB ثم NEXT ثم 7D ثم NEXT فتُحفظ البيانات.','A B 7 D NEXT'],['Step 3: press RESET, then EB and type 700 to write the program.','3) اضغط RESET ثم EB واكتب 700 لكتابة البرنامج.','RESET EB 7 0'],['Step 4: NEXT, then ⟦8B 0E 00 05|MOV CX,[0500]⟧, ⟦8B C1|MOV AX,CX⟧, ⟦CC|HLT⟧, each followed by NEXT.','4) NEXT ثم ⟦8B 0E 00 05|MOV CX,[0500]⟧ ثم ⟦8B C1|MOV AX,CX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.','NEXT 8 B 0 E 5 C 1 F 4'],['Step 5: press RESET, GO, type 700, then TTY.','5) اضغط RESET ثم GO ثم اكتب 700 ثم TTY.','RESET GO 7 0 TTY'],['Result: CX and AX both hold 7DAB.','النتيجة: CX وAX يحملان 7DAB.','r:CX r:AX']]},
-{k:'e',t:['Example 2: DL and DH','مثال 2: DL وDH'],s:[['Goal: DL = 8C and DH = [600] = AF, so DX = AF8C.','الهدف: DL = 8C وDH = [600] = AF فيصبح DX = AF8C.','r:DX'],['Step 1: first store AF at 600: EB, 600, NEXT, AF, NEXT.','1) خزّن AF أولاً عند 600: EB ثم 600 ثم NEXT ثم AF ثم NEXT.','r:DX'],['Step 2: press RESET, EB, 800, NEXT, then enter ⟦B2 8C|MOV DL,8C⟧, each byte then NEXT.','2) اضغط RESET ثم EB و800 وNEXT، ثم أدخل ⟦B2 8C|MOV DL,8C⟧ مع NEXT بعد كل بايت.',''],['Step 3: enter ⟦8A 36 00 06|MOV DH,[0600]⟧, each byte then NEXT.','3) أدخل ⟦8A 36 00 06|MOV DH,[0600]⟧ مع NEXT بعد كل بايت.',''],['Step 4: enter ⟦8B C2|MOV AX,DX⟧ then ⟦CC|HLT⟧, each byte then NEXT.','4) أدخل ⟦8B C2|MOV AX,DX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.',''],['Step 5: run with RESET, GO, 800, TTY. AX shows AF8C.','5) نفّذ بـ RESET ثم GO ثم 800 ثم TTY فيظهر AX = AF8C.','r:AX']]},
-{k:'e',t:['Example 3: BX to memory','مثال 3: من BX إلى الذاكرة'],s:[['Goal: BX = 943E, then store BX at 650.','الهدف: BX = 943E ثم تخزينه عند 650.','r:BX'],['Step 1: press EB, 400, NEXT, then enter ⟦BB 3E 94|MOV BX,943E⟧, each byte then NEXT.','1) اضغط EB و400 وNEXT، ثم أدخل ⟦BB 3E 94|MOV BX,943E⟧ مع NEXT بعد كل بايت.','r:BX'],['Step 2: enter ⟦89 1E 50 06|MOV [0650],BX⟧ then ⟦CC|HLT⟧, each byte then NEXT.','2) أدخل ⟦89 1E 50 06|MOV [0650],BX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.','r:BX'],['Step 3: run with RESET, GO, 400, TTY.','3) نفّذ بـ RESET ثم GO ثم 400 ثم TTY.','r:BX'],['Step 4: check memory: EB, 650, NEXT. 3E is at 650 and 94 at 651.','4) افحص الذاكرة: EB ثم 650 ثم NEXT: ستجد 3E عند 650 و94 عند 651.','r:BX']]},
+{k:'e',t:['Example 1: memory to CX to AX','مثال 1: من الذاكرة إلى CX ثم AX'],s:[['Goal: copy memory 500-501 into CX, then into AX. Data: AB at 500, 7D at 501.','الهدف: نسخ الذاكرة 500-501 إلى CX ثم AX. البيانات: AB عند 500 و7D عند 501.','r:CX r:AX'],['Step 1: press EB, type 500, press NEXT.','1) اضغط EB واكتب 500 ثم NEXT.','EB 0 5 NEXT'],['Step 2: type AB, NEXT, then 7D, NEXT. The data is stored.','2) اكتب AB ثم NEXT ثم 7D ثم NEXT فتُحفظ البيانات.','A B 7 D NEXT'],['Step 3: press RESET, then EB and type 700 to write the program.','3) اضغط RESET ثم EB واكتب 700 لكتابة البرنامج.','RESET EB 7 0'],['Step 4: NEXT, then ⟦8B 0E 00 05|MOV CX,[0500]⟧, ⟦8B C1|MOV AX,CX⟧, ⟦CC|HLT⟧, each followed by NEXT.','4) NEXT ثم ⟦8B 0E 00 05|MOV CX,[0500]⟧ ثم ⟦8B C1|MOV AX,CX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.','NEXT 8 B 0 E 5 C 1 F 4'],['Step 5: press TTY, GO, type 700, then TTY.','5) اضغط TTY ثم GO ثم اكتب 700 ثم TTY.','TTY GO 7 0 TTY'],['Result: CX and AX both hold 7DAB.','النتيجة: CX وAX يحملان 7DAB.','r:CX r:AX']]},
+{k:'e',t:['Example 2: DL and DH','مثال 2: DL وDH'],s:[['Goal: DL = 8C and DH = [600] = AF, so DX = AF8C.','الهدف: DL = 8C وDH = [600] = AF فيصبح DX = AF8C.','r:DX'],['Step 1: first store AF at 600: EB, 600, NEXT, AF, NEXT.','1) خزّن AF أولاً عند 600: EB ثم 600 ثم NEXT ثم AF ثم NEXT.','r:DX'],['Step 2: press RESET, EB, 800, NEXT, then enter ⟦B2 8C|MOV DL,8C⟧, each byte then NEXT.','2) اضغط RESET ثم EB و800 وNEXT، ثم أدخل ⟦B2 8C|MOV DL,8C⟧ مع NEXT بعد كل بايت.',''],['Step 3: enter ⟦8A 36 00 06|MOV DH,[0600]⟧, each byte then NEXT.','3) أدخل ⟦8A 36 00 06|MOV DH,[0600]⟧ مع NEXT بعد كل بايت.',''],['Step 4: enter ⟦8B C2|MOV AX,DX⟧ then ⟦CC|HLT⟧, each byte then NEXT.','4) أدخل ⟦8B C2|MOV AX,DX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.',''],['Step 5: run with TTY, GO, 800, TTY. AX shows AF8C.','5) نفّذ بـ TTY ثم GO ثم 800 ثم TTY فيظهر AX = AF8C.','r:AX']]},
+{k:'e',t:['Example 3: BX to memory','مثال 3: من BX إلى الذاكرة'],s:[['Goal: BX = 943E, then store BX at 650.','الهدف: BX = 943E ثم تخزينه عند 650.','r:BX'],['Step 1: press EB, 400, NEXT, then enter ⟦BB 3E 94|MOV BX,943E⟧, each byte then NEXT.','1) اضغط EB و400 وNEXT، ثم أدخل ⟦BB 3E 94|MOV BX,943E⟧ مع NEXT بعد كل بايت.','r:BX'],['Step 2: enter ⟦89 1E 50 06|MOV [0650],BX⟧ then ⟦CC|HLT⟧, each byte then NEXT.','2) أدخل ⟦89 1E 50 06|MOV [0650],BX⟧ ثم ⟦CC|HLT⟧ مع NEXT بعد كل بايت.','r:BX'],['Step 3: run with TTY, GO, 400, TTY.','3) نفّذ بـ TTY ثم GO ثم 400 ثم TTY.','r:BX'],['Step 4: check memory: EB, 650, NEXT. 3E is at 650 and 94 at 651.','4) افحص الذاكرة: EB ثم 650 ثم NEXT: ستجد 3E عند 650 و94 عند 651.','r:BX']]},
 {k:'x',t:['Exercise: DX to AX','تمرين: DX إلى AX'],s:[['Make AX show 3C5A: put 5A in DL, 3C in DH, then copy DX to AX.','اجعل AX يعرض 3C5A: ضع 5A في DL و3C في DH ثم انسخ DX إلى AX.','r:DX r:AX','Hint: B2 5A, B6 3C, 8B C2, then CC.','تلميح: B2 5A وB6 3C و8B C2 ثم CC.','AX=3C5A']]},
-{k:'q',t:['Final test','الاختبار النهائي'],q:[['AX is made of AH (high) and AL (low).','AX يتكوّن من AH (العلوي) وAL (السفلي).',true],['MOV AX,CX copies AX into CX.','الأمر MOV AX,CX ينسخ AX إلى CX.',false],['A 16-bit value is stored with its low byte at the lower address.','القيمة 16 بت تُخزّن بالبايت الأدنى في العنوان الأقل.',true]]}]};
+{k:'q',t:['Final test','الاختبار النهائي'],q:[['AX is made of AH (high) and AL (low).','AX يتكوّن من AH (العلوي) وAL (السفلي).',true],['MOV AX,CX copies AX into CX.','الأمر MOV AX,CX ينسخ AX إلى CX.',false,'The destination is written first: MOV AX,CX copies CX into AX.','الوجهة تُكتب أولاً: الأمر MOV AX,CX ينسخ CX إلى AX.'],['A 16-bit value is stored with its low byte at the lower address.','القيمة 16 بت تُخزّن بالبايت الأدنى في العنوان الأقل.',true]]}],
+/* Level 3: MOV instruction machine code (Experiment 3). Exercise checks: AX=.., AL=.. or M<addr>=<bytes>, joined with & */
+3:[
+{k:'c',t:['MOV instruction','تعليمة MOV'],s:[
+['The 8086 has three groups of instructions: data movement, arithmetic and logic, and program control.','لدى 8086 ثلاث مجموعات من التعليمات: نقل البيانات، والعمليات الحسابية والمنطقية، والتحكم في البرنامج.',''],
+['Each instruction has its own binary code. The chip decodes it and does the job.','لكل تعليمة كود ثنائي خاص بها، يفك المعالج شيفرته وينفّذ العمل المطلوب.',''],
+['MOV is the main data movement instruction. It transfers data from a source to a destination.','التعليمة MOV هي أهم تعليمات نقل البيانات. وهي تنقل البيانات من المصدر (source) إلى الوجهة (destination).',''],
+['The destination is written first: MOV AX,BX copies BX into AX, and BX keeps its value.','نكتب الوجهة أولاً ثم المصدر. مثال: MOV AX,BX تنسخ محتوى BX إلى AX، ويبقى BX محتفظاً بقيمته.','r:AX r:BX'],
+['Goal of this level: understand how each MOV instruction becomes machine code bytes.','هدف هذا المستوى: فهم كيف تتحول كل تعليمة MOV إلى بايتات من الكود الآلي.','']]},
+{k:'c',t:['MOV code format','صيغة كود MOV'],s:[
+['A MOV instruction has four parts: opcode, MOD-REG-R/M, displacement and immediate.','تتكوّن تعليمة MOV من أربعة أجزاء:\n1) الأوبكود (opcode)\n2) بايت MOD-REG-R/M\n3) الإزاحة (displacement)\n4) القيمة الفورية (immediate)',''],
+['Sizes: opcode 1-2 bytes, MOD-REG-R/M 0-1 byte, displacement 0-2 bytes, immediate 0-2 bytes.','الأحجام: الأوبكود 1-2 بايت، وMOD-REG-R/M من 0 إلى 1 بايت، والإزاحة من 0 إلى 2 بايت، والقيمة الفورية من 0 إلى 2 بايت.',''],
+['Not every part is always present. MOV AX,BX is only two bytes: opcode and MOD-REG-R/M (8B C3).','لا تظهر الأجزاء الأربعة دائماً. مثال: التعليمة MOV AX,BX من بايتين فقط: الأوبكود ثم بايت MOD-REG-R/M. كودها: 8B C3.',''],
+['MOV CX,[0500] adds a 16-bit address: 8B 0E 00 05. A 16-bit value is stored low byte first.','التعليمة MOV CX,[0500] تضيف عنواناً من 16 بت. كودها: 8B 0E 00 05.\nلاحظ أن العنوان 0500 كُتب 00 05، لأن القيمة 16 بت تُخزّن بالبايت الأدنى أولاً.',''],
+['MOV with an immediate value into a register has no MOD-REG-R/M byte. Its opcode is 1011 W REG: W picks 8 or 16 bits and REG is the register code.','عندما ننقل قيمة فورية (رقماً نكتبه مباشرة) إلى مسجل، لا نحتاج إلى بايت MOD-REG-R/M.\nيتكوّن الأوبكود من 8 بتات: 1011 ثم W ثم REG.\nالبت W يحدد حجم القيمة: 8 بت أو 16 بت.\nوالحقل REG هو رمز المسجل.',''],
+['So B0-B7 load an 8-bit value and B8-BF a 16-bit value. MOV AX,1234 = B8 34 12. MOV BL,5A = B3 5A.','إذن الأوبكودات من B0 إلى B7 تُستعمل لقيمة 8 بت، ومن B8 إلى BF لقيمة 16 بت.\nمثال: MOV AX,1234 كودها B8 34 12.\nومثال: MOV BL,5A كودها B3 5A.','']]},
+{k:'c',t:['Opcode: D and W','الأوبكود: D وW'],s:[
+['The opcode byte has 8 bits: six bits for the operation, then the bits D and W.','بايت الأوبكود من 8 بتات: ست بتات للعملية ثم البتان D وW.',''],
+['The six bits choose the operation: ADD, SUB, MOV... For MOV they are 100010.','البتات الست الأولى تحدد نوع العملية (ADD أو SUB أو MOV ...). وفي تعليمة MOV تكون قيمتها 100010.',''],
+['D is the direction. D=1: data goes to the register REG, so REG is the destination.','البت D هو اتجاه النقل. عندما D=1 تذهب البيانات إلى المسجل REG، أي أن REG هو الوجهة.',''],
+['D=0: data goes from REG to R/M, so R/M is the destination (usually memory).','عندما D=0 تذهب البيانات من REG إلى R/M، أي أن R/M هي الوجهة (غالباً الذاكرة).',''],
+['W is the width. W=1: a word (16-bit). W=0: a byte (8-bit).','البت W هو عرض البيانات. عندما W=1 تكون كلمة (16 بت)، وعندما W=0 تكون بايت (8 بت).',''],
+['So MOV has four opcodes: 88 (D=0, W=0), 89 (D=0, W=1), 8A (D=1, W=0) and 8B (D=1, W=1).','إذن لـ MOV أربعة أوبكودات: 88 (D=0, W=0) و89 (D=0, W=1) و8A (D=1, W=0) و8B (D=1, W=1).','']]},
+{k:'c',t:['MOD-REG-R/M byte','بايت MOD-REG-R/M'],s:[
+['The second byte of a data movement instruction is MOD-REG-R/M: 2 bits MOD, 3 bits REG, 3 bits R/M.','البايت الثاني في تعليمات نقل البيانات هو MOD-REG-R/M: بتان للحقل MOD وثلاث بتات للحقل REG وثلاث بتات للحقل R/M.',''],
+['MOD sets the addressing mode. 00: no displacement. 01: 8-bit sign-extended displacement.','الحقل MOD يحدد نمط العنونة، أي طريقة الوصول إلى المعامل.\nإذا كان MOD=00 فلا توجد إزاحة.\nوإذا كان MOD=01 فهناك إزاحة من 8 بت.',''],
+['10: 16-bit displacement. 11: R/M is a register.','وإذا كان MOD=10 فهناك إزاحة من 16 بت.\nوإذا كان MOD=11 فالمعامل R/M هو مسجّل وليس عنواناً في الذاكرة.',''],
+['With MOD=11 both operands are registers. With MOD=00, 01 or 10 the R/M operand is in memory.','عند MOD=11 يكون المعاملان مسجّلين. وعند MOD=00 أو 01 أو 10 يكون المعامل R/M في الذاكرة.',''],
+['REG always names a register. R/M names a register (MOD=11) or a memory address.','الحقل REG يحدد مسجلاً دائماً. أما R/M فتحدد مسجلاً (MOD=11) أو عنواناً في الذاكرة.',''],
+['Remember: MOD decides what R/M means. Next we read the REG and R/M tables.','تذكّر: الحقل MOD هو الذي يحدد معنى R/M. بعد ذلك نقرأ جداول REG وR/M.','']]},
+{k:'c',t:['REG and R/M registers','المسجلات في REG وR/M'],s:[
+['When MOD=11, the 3-bit code names a register and W picks the size: byte or word.','عند MOD=11 يحدد الرمز ذو الثلاث بتات مسجلاً، ويحدد W الحجم: بايت أو كلمة.',''],
+['W=0 (8-bit): 000 AL, 001 CL, 010 DL, 011 BL, 100 AH, 101 CH, 110 DH, 111 BH.','عند W=0 (8 بت): 000 AL و001 CL و010 DL و011 BL و100 AH و101 CH و110 DH و111 BH.','r:AX r:CX r:DX r:BX'],
+['W=1 (16-bit): 000 AX, 001 CX, 010 DX, 011 BX, 100 SP, 101 BP, 110 SI, 111 DI.','عند W=1 (16 بت): 000 AX و001 CX و010 DX و011 BX و100 SP و101 BP و110 SI و111 DI.','r:AX r:CX r:DX r:BX r:SP r:BP r:SI r:DI'],
+['Learn the 16-bit order: AX CX DX BX SP BP SI DI. Note that CX comes before BX.','احفظ ترتيب 16 بت: AX CX DX BX SP BP SI DI. لاحظ أن CX قبل BX.',''],
+['REG is the destination when D=1 and the source when D=0. R/M is the other operand.','المسجل REG هو الوجهة عندما D=1 وهو المصدر عندما D=0، وR/M هو المعامل الآخر.',''],
+['Example: MOV AX,DX has D=1, W=1, MOD=11, REG=000 (AX), R/M=010 (DX).','مثال: في التعليمة MOV AX,DX تكون القيم هكذا:\nD=1 و W=1 و MOD=11\nREG=000 وهو AX\nR/M=010 وهو DX','r:AX r:DX'],
+['The second byte is 11 000 010 = C2, so the code is 8B C2.','البايت الثاني هو 11 000 010 = C2، فيكون الكود 8B C2.','']]},
+{k:'c',t:['Memory addressing','عنونة الذاكرة'],s:[
+['When MOD is 00, 01 or 10, R/M selects a memory address built from BX, BP, SI, DI and a displacement.','عندما يكون MOD هو 00 أو 01 أو 10 تحدد R/M عنواناً في الذاكرة يُبنى من BX وBP وSI وDI مع إزاحة.',''],
+['R/M codes: 000 BX+SI, 001 BX+DI, 010 BP+SI, 011 BP+DI.','رموز R/M: 000 BX+SI و001 BX+DI و010 BP+SI و011 BP+DI.',''],
+['100 SI, 101 DI, 110 direct address (it is BP when MOD is 01 or 10), 111 BX.','100 SI و101 DI و110 عنوان مباشر (وهي BP عندما يكون MOD هو 01 أو 10) و111 BX.',''],
+['MOD=00: no displacement. MOD=01: add D8, an 8-bit displacement. MOD=10: add D16, a 16-bit displacement.','MOD=00: بدون إزاحة. MOD=01: نضيف D8 أي إزاحة 8 بت. MOD=10: نضيف D16 أي إزاحة 16 بت.',''],
+['Special case: MOD=00 with R/M=110 is not [BP]. It means a direct address: a 16-bit address follows the byte.','حالة خاصة: عندما MOD=00 و R/M=110 فهذا لا يعني [BP]،\nبل يعني عنواناً مباشراً، ويأتي بعده عنوان من 16 بت.',''],
+['The displacement or address comes after MOD-REG-R/M, low byte first: 1234 is stored as 34 12.','تأتي الإزاحة أو العنوان بعد بايت MOD-REG-R/M بالبايت الأدنى أولاً: القيمة 1234 تُخزّن 34 12.',''],
+['Examples: R/M=111 with MOD=01 is [BX+D8]. R/M=010 with MOD=10 is [BP+SI+D16].','أمثلة: R/M=111 مع MOD=01 تعني [BX+D8]. وR/M=010 مع MOD=10 تعني [BP+SI+D16].','']]},
+{k:'e',t:['Example 1: decode 8B EC','مثال 1: فك الكود 8B EC'],s:[
+['Goal: interpret the machine code 8B EC.','الهدف: فك الكود الآلي 8B EC.',''],
+['Step 1: write it in binary. 8B = 1000 1011 and EC = 1110 1100.','1) نكتبه ثنائياً: 8B = 1000 1011 وEC = 1110 1100.',''],
+['Step 2: the opcode byte 1000 1011 is 100010 + D=1 + W=1. So it is MOV, to the register REG, 16-bit.','2) بايت الأوبكود 1000 1011 يتكوّن من 100010 ثم D=1 ثم W=1.\nإذن هي MOV، والبيانات تذهب إلى المسجل REG، والحجم 16 بت.',''],
+['Step 3: split the second byte EC = 11 101 100. MOD=11 means R/M is a register.','3) نقسم البايت الثاني EC = 11 101 100 إلى ثلاثة حقول.\nالحقل MOD=11 يعني أن R/M مسجّل.',''],
+['Step 4: with W=1, REG=101 is BP and R/M=100 is SP.','4) مع W=1 يكون REG=101 هو BP وR/M=100 هو SP.','r:BP r:SP'],
+['Step 5: D=1, so REG (BP) is the destination. The instruction is MOV BP,SP.','5) بما أن D=1 فالوجهة هي REG (BP). إذن التعليمة هي MOV BP,SP.','r:BP r:SP'],
+['Step 6: test it on the kit. Press RESET, EB, type 600, then NEXT.','6) جرّبها على الكيت: اضغط RESET ثم EB واكتب 600 ثم NEXT.','RESET EB 6 0 0 NEXT'],
+['Step 7: type ⟦8B, NEXT, EC, NEXT|MOV BP,SP⟧, then ⟦CC, NEXT|HLT⟧.','7) اكتب ⟦8B ثم NEXT ثم EC ثم NEXT|MOV BP,SP⟧ ثم ⟦CC ثم NEXT|HLT⟧.','8 B NEXT E C NEXT C C NEXT'],
+['Step 8: press TTY, GO, type 600, then TTY. BP now holds the same value as SP.','8) اضغط TTY ثم GO واكتب 600 ثم TTY. يحمل BP الآن نفس قيمة SP.','TTY GO 6 0 0 TTY r:BP r:SP']]},
+{k:'e',t:['Example 2: choosing MOD','مثال 2: اختيار MOD'],s:[
+['Goal: choose MOD for three instructions that all use [DI]. In all of them R/M=101 means DI.','الهدف: اختيار MOD لثلاث تعليمات تستخدم كلها [DI]. في الثلاث تعني R/M=101 المسجل DI.',''],
+['MOV AL,[DI] has no displacement, so MOD=00.','التعليمة MOV AL,[DI] ليس فيها إزاحة، إذن MOD=00.',''],
+['MOV AL,[DI+02H]: 02H fits in 8 bits, so MOD=01 and one displacement byte follows.','التعليمة MOV AL,[DI+02H]: القيمة 02H تتسع في 8 بت، إذن MOD=01 ويتبعها بايت إزاحة واحد.',''],
+['MOV AL,[DI+1000H]: 1000H needs 16 bits, so MOD=10 and two displacement bytes follow.','التعليمة MOV AL,[DI+1000H]: القيمة 1000H تحتاج 16 بت، إذن MOD=10 ويتبعها بايتا إزاحة.',''],
+['Now the bytes. The opcode is 8A (D=1, W=0), AL is REG=000. With MOD=00 the second byte is 00 000 101 = 05: ⟦8A 05|MOV AL,[DI]⟧.','والآن البايتات. الأوبكود 8A (D=1 وW=0) وAL هو REG=000. مع MOD=00 يكون البايت الثاني 00 000 101 = 05: ⟦8A 05|MOV AL,[DI]⟧.',''],
+['With MOD=01 the byte is 01 000 101 = 45, then the displacement: ⟦8A 45 02|MOV AL,[DI+02H]⟧.','مع MOD=01 يكون البايت 01 000 101 = 45 ثم الإزاحة: ⟦8A 45 02|MOV AL,[DI+02H]⟧.',''],
+['With MOD=10 the byte is 10 000 101 = 85, then 1000H low byte first: ⟦8A 85 00 10|MOV AL,[DI+1000H]⟧.','مع MOD=10 يكون البايت 10 000 101 = 85 ثم 1000H بالبايت الأدنى أولاً: ⟦8A 85 00 10|MOV AL,[DI+1000H]⟧.','']]},
+{k:'e',t:['Example 3: encode a MOV','مثال 3: كتابة كود MOV'],s:[
+['Goal: write the machine code of MOV CX,[BX+DI+20H].','الهدف: كتابة الكود الآلي للتعليمة MOV CX,[BX+DI+20H].','r:CX r:BX r:DI'],
+['Step 1: CX is a register and the destination, so D=1. It is 16-bit, so W=1. The opcode is 8B.','1) المسجل CX هو الوجهة إذن D=1، وهو 16 بت إذن W=1. الأوبكود هو 8B.',''],
+['Step 2: the address has a one-byte displacement (20H), so MOD=01.','2) العنوان فيه إزاحة من بايت واحد (20H)، إذن MOD=01.',''],
+['Step 3: REG=001 (CX) and R/M=001 (BX+DI). The byte is 01 001 001 = 49.','3) REG=001 (CX) وR/M=001 (BX+DI). فيكون البايت 01 001 001 = 49.',''],
+['Step 4: add the displacement byte 20. The code is ⟦8B 49 20|MOV CX,[BX+DI+20H]⟧.','4) نضيف بايت الإزاحة 20. فيكون الكود ⟦8B 49 20|MOV CX,[BX+DI+20H]⟧.','']]},
+{k:'x',t:['Exercise 1: decode','تمرين 1: فك الكود'],s:[
+['Write the instruction for 8B D1. Use Hint to check your answer.','اكتب التعليمة التي يمثلها الكود 8B D1. استعمل زر التلميح للتحقق من إجابتك.','','8B means D=1, W=1. D1 = 11 010 001: REG=DX, R/M=CX. Answer: MOV DX,CX.','الأوبكود 8B يعني D=1 وW=1. و D1 = 11 010 001: REG=DX وR/M=CX. الجواب: MOV DX,CX.'],
+['Write the instruction for 8B EC.','اكتب التعليمة التي يمثلها الكود 8B EC.','','EC = 11 101 100: REG=BP, R/M=SP. Answer: MOV BP,SP.','EC = 11 101 100: REG=BP وR/M=SP. الجواب: MOV BP,SP.'],
+['Write the instruction for 8B F0.','اكتب التعليمة التي يمثلها الكود 8B F0.','','F0 = 11 110 000: REG=SI, R/M=AX. Answer: MOV SI,AX.','F0 = 11 110 000: REG=SI وR/M=AX. الجواب: MOV SI,AX.'],
+['Write the instruction for 8B FE.','اكتب التعليمة التي يمثلها الكود 8B FE.','','FE = 11 111 110: REG=DI, R/M=SI. Answer: MOV DI,SI.','FE = 11 111 110: REG=DI وR/M=SI. الجواب: MOV DI,SI.'],
+['Write the instruction for 8A C7.','اكتب التعليمة التي يمثلها الكود 8A C7.','','8A means D=1, W=0 (8-bit). C7 = 11 000 111: REG=AL, R/M=BH. Answer: MOV AL,BH.','الأوبكود 8A يعني D=1 وW=0 (8 بت). و C7 = 11 000 111: REG=AL وR/M=BH. الجواب: MOV AL,BH.'],
+['Write the instruction for 8A EA.','اكتب التعليمة التي يمثلها الكود 8A EA.','','EA = 11 101 010: REG=CH, R/M=DL. Answer: MOV CH,DL.','EA = 11 101 010: REG=CH وR/M=DL. الجواب: MOV CH,DL.'],
+['Write the instruction for 8A D8.','اكتب التعليمة التي يمثلها الكود 8A D8.','','D8 = 11 011 000: REG=BL, R/M=AL. Answer: MOV BL,AL.','D8 = 11 011 000: REG=BL وR/M=AL. الجواب: MOV BL,AL.'],
+['Write the instruction for 88 71 02.','اكتب التعليمة التي يمثلها الكود 88 71 02.','','88 means D=0, W=0: REG to R/M, 8-bit. 71 = 01 110 001: MOD=01, REG=DH, R/M=BX+DI, displacement 02. Answer: MOV [BX+DI+02H],DH.','الأوبكود 88 يعني D=0 وW=0: من REG إلى R/M بحجم 8 بت. و 71 = 01 110 001: MOD=01 وREG=DH وR/M=BX+DI والإزاحة 02. الجواب: MOV [BX+DI+02H],DH.'],
+['Write the instruction for 8B 87 23 01.','اكتب التعليمة التي يمثلها الكود 8B 87 23 01.','','8B means D=1, W=1. 87 = 10 000 111: MOD=10, REG=AX, R/M=BX. Displacement 23 01 = 0123H. Answer: MOV AX,[BX+0123H].','الأوبكود 8B يعني D=1 وW=1. و 87 = 10 000 111: MOD=10 وREG=AX وR/M=BX. الإزاحة 23 01 = 0123H. الجواب: MOV AX,[BX+0123H].'],
+['Write the instruction for 89 1E 00 06.','اكتب التعليمة التي يمثلها الكود 89 1E 00 06.','','89 means D=0, W=1. 1E = 00 011 110: MOD=00, REG=BX, R/M=110 direct address. Address 00 06 = 0600H. Answer: MOV [0600H],BX.','الأوبكود 89 يعني D=0 وW=1. و 1E = 00 011 110: MOD=00 وREG=BX وR/M=110 عنوان مباشر. العنوان 00 06 = 0600H. الجواب: MOV [0600H],BX.']]},
+{k:'x',t:['Exercise 2: encode','تمرين 2: كتابة الكود'],s:[
+['Write the machine code of MOV AX,BX. Store it at 0600: RESET, EB, 600, NEXT, then each byte followed by NEXT.','اكتب الكود الآلي للتعليمة MOV AX,BX وخزّنه عند 0600: RESET ثم EB ثم 600 ثم NEXT ثم كل بايت متبوعاً بـ NEXT.','EB','D=1, W=1 gives 8B. MOD=11, REG=AX (000), R/M=BX (011): 11 000 011 = C3. Code: 8B C3.','D=1 وW=1 تعطي 8B. وMOD=11 وREG=AX (000) وR/M=BX (011): 11 000 011 = C3. الكود: 8B C3.','M0600=8BC3'],
+['Next: MOV BL,CH. Store its code at 0600.','التالي: MOV BL,CH. خزّن كودها عند 0600.','EB','D=1, W=0 gives 8A. MOD=11, REG=BL (011), R/M=CH (101): 11 011 101 = DD. Code: 8A DD.','D=1 وW=0 تعطي 8A. وMOD=11 وREG=BL (011) وR/M=CH (101): 11 011 101 = DD. الكود: 8A DD.','M0600=8ADD'],
+['Next: MOV AH,[0500H]. Store its code at 0600.','التالي: MOV AH,[0500H]. خزّن كودها عند 0600.','EB','D=1, W=0 gives 8A. MOD=00, REG=AH (100), R/M=110 (direct address): 00 100 110 = 26. Address 0500, low byte first: 00 05. Code: 8A 26 00 05.','D=1 وW=0 تعطي 8A. وMOD=00 وREG=AH (100) وR/M=110 (عنوان مباشر): 00 100 110 = 26. العنوان 0500 بالبايت الأدنى أولاً: 00 05. الكود: 8A 26 00 05.','M0600=8A260005'],
+['Next: MOV [0450H],BL. Store its code at 0600.','التالي: MOV [0450H],BL. خزّن كودها عند 0600.','EB','D=0, W=0 gives 88. MOD=00, REG=BL (011), R/M=110 (direct address): 00 011 110 = 1E. Address 0450: 50 04. Code: 88 1E 50 04.','D=0 وW=0 تعطي 88. وMOD=00 وREG=BL (011) وR/M=110 (عنوان مباشر): 00 011 110 = 1E. العنوان 0450: 50 04. الكود: 88 1E 50 04.','M0600=881E5004'],
+['Next: MOV [BX+SI],CX. Store its code at 0600.','التالي: MOV [BX+SI],CX. خزّن كودها عند 0600.','EB','D=0, W=1 gives 89. MOD=00, REG=CX (001), R/M=BX+SI (000): 00 001 000 = 08. Code: 89 08.','D=0 وW=1 تعطي 89. وMOD=00 وREG=CX (001) وR/M=BX+SI (000): 00 001 000 = 08. الكود: 89 08.','M0600=8908'],
+['Next: MOV DL,[BP+SI+1234H]. Store its code at 0600.','التالي: MOV DL,[BP+SI+1234H]. خزّن كودها عند 0600.','EB','D=1, W=0 gives 8A. MOD=10 (16-bit displacement), REG=DL (010), R/M=BP+SI (010): 10 010 010 = 92. Displacement 1234: 34 12. Code: 8A 92 34 12.','D=1 وW=0 تعطي 8A. وMOD=10 (إزاحة 16 بت) وREG=DL (010) وR/M=BP+SI (010): 10 010 010 = 92. الإزاحة 1234: 34 12. الكود: 8A 92 34 12.','M0600=8A923412'],
+['Next: MOV [DI+56H],AL. Store its code at 0600.','التالي: MOV [DI+56H],AL. خزّن كودها عند 0600.','EB','D=0, W=0 gives 88. MOD=01 (56H fits in 8 bits), REG=AL (000), R/M=DI (101): 01 000 101 = 45. Code: 88 45 56.','D=0 وW=0 تعطي 88. وMOD=01 (القيمة 56H تتسع في 8 بت) وREG=AL (000) وR/M=DI (101): 01 000 101 = 45. الكود: 88 45 56.','M0600=884556'],
+['Next: MOV SI,FC67H. Store its code at 0600.','التالي: MOV SI,FC67H. خزّن كودها عند 0600.','EB','This is an immediate MOV into a register: B8 + register code. SI is 110, so B8+6 = BE. The value FC67 goes low byte first. Code: BE 67 FC.','هذه MOV بقيمة فورية إلى مسجل: B8 + رمز المسجل. رمز SI هو 110 فيكون B8+6 = BE. والقيمة FC67 بالبايت الأدنى أولاً. الكود: BE 67 FC.','M0600=BE67FC'],
+['Next: MOV SP,[0800H]. Store its code at 0600.','التالي: MOV SP,[0800H]. خزّن كودها عند 0600.','EB','D=1, W=1 gives 8B. MOD=00, REG=SP (100), R/M=110 (direct address): 00 100 110 = 26. Address 0800: 00 08. Code: 8B 26 00 08.','D=1 وW=1 تعطي 8B. وMOD=00 وREG=SP (100) وR/M=110 (عنوان مباشر): 00 100 110 = 26. العنوان 0800: 00 08. الكود: 8B 26 00 08.','M0600=8B260008'],
+['Last one: MOV [BX],CL. Store its code at 0600.','الأخيرة: MOV [BX],CL. خزّن كودها عند 0600.','EB','D=0, W=0 gives 88. MOD=00, REG=CL (001), R/M=BX (111): 00 001 111 = 0F. Code: 88 0F.','D=0 وW=0 تعطي 88. وMOD=00 وREG=CL (001) وR/M=BX (111): 00 001 111 = 0F. الكود: 88 0F.','M0600=880F']]},
+{k:'x',t:['Exercise 3: memory to BL','تمرين 3: من الذاكرة إلى BL'],s:[
+['Task: move the byte at 0700 into BL, copy BL into AL, then stop. First store the test value 6E at 0700.','المهمة: انقل البايت الموجود عند 0700 إلى BL ثم انسخ BL إلى AL ثم توقف. خزّن أولاً القيمة التجريبية 6E عند 0700.','EB','RESET, EB, 700, NEXT, 6E (keys 6 then E), NEXT.','RESET ثم EB ثم 700 ثم NEXT ثم 6E (المفتاح 6 ثم E) ثم NEXT.','M0700=6E'],
+['Now write the program at 0800:\nMOV BL,[0700]\nMOV AL,BL\nHLT\nEnter its machine code.','اكتب الآن البرنامج عند 0800:\nMOV BL,[0700]\nMOV AL,BL\nHLT\nأدخل الكود الآلي له.','EB','MOV BL,[0700] = 8A 1E 00 07. MOV AL,BL = 8A C3. HLT = CC. So type 8A 1E 00 07 8A C3 CC.','MOV BL,[0700] = 8A 1E 00 07. وMOV AL,BL = 8A C3. وHLT = CC. إذن اكتب 8A 1E 00 07 8A C3 CC.','M0800=8A1E00078AC3CC'],
+['Run it: TTY, GO, 800, then TTY. Both AL and BL should become 6E.','شغّله: TTY ثم GO ثم 800 ثم TTY. يجب أن يصبح AL وBL كلاهما 6E.','r:AX r:BX','TTY, GO, 8, 0, 0, TTY.','TTY ثم GO ثم 8 ثم 0 ثم 0 ثم TTY.','AL=6E&BL=6E'],
+['To see the result on the 7-segment display: press REG, then 0 (AX). The two right digits are AL = 6E.','لرؤية النتيجة على الشاشة السباعية: اضغط REG ثم 0 (AX). الخانتان اليمنيان هما AL = 6E.','REG 0 dl']]},
+{k:'x',t:['Exercise 4: what does it do?','تمرين 4: ماذا يفعل البرنامج؟'],s:[
+['What does this program do?\nMOV CH,[0600H]\nMOV BL,[0700H]\nMOV AL,CH\nMOV AH,BL\nMOV [0800],AX\nHLT','ماذا يفعل هذا البرنامج؟\nMOV CH,[0600H]\nMOV BL,[0700H]\nMOV AL,CH\nMOV AH,BL\nMOV [0800],AX\nHLT','','It reads the bytes at 0600 and 0700, packs them into AX (AL = [0600], AH = [0700]) and stores AX at 0800-0801.','يقرأ البايتين عند 0600 و0700 ويجمعهما في AX (AL = [0600] وAH = [0700]) ثم يخزّن AX عند 0800-0801.'],
+['Store test bytes: 25 at 0600 and 9C at 0700 (EB, address, NEXT, value, NEXT; press RESET between them).','خزّن بايتات تجريبية: 25 عند 0600 و9C عند 0700 (EB ثم العنوان ثم NEXT ثم القيمة ثم NEXT، مع RESET بينهما).','EB','RESET, EB, 600, NEXT, 25, NEXT. Then RESET, EB, 700, NEXT, 9C, NEXT.','RESET ثم EB ثم 600 ثم NEXT ثم 25 ثم NEXT. بعدها RESET ثم EB ثم 700 ثم NEXT ثم 9C ثم NEXT.','M0600=25&M0700=9C'],
+['Enter the program at 0500 as machine code (RESET, EB, 500, NEXT, then every byte with NEXT). It writes its result at 0800, over the Exercise 3 program.','أدخل البرنامج عند 0500 ككود آلي (RESET ثم EB ثم 500 ثم NEXT ثم كل بايت مع NEXT). ويكتب نتيجته عند 0800 فوق برنامج التمرين 3.','EB','8A 2E 00 06 = MOV CH,[0600]. 8A 1E 00 07 = MOV BL,[0700]. 8A C5 = MOV AL,CH. 8A E3 = MOV AH,BL. 89 06 00 08 = MOV [0800],AX. CC = HLT.','8A 2E 00 06 = MOV CH,[0600]. و8A 1E 00 07 = MOV BL,[0700]. و8A C5 = MOV AL,CH. و8A E3 = MOV AH,BL. و89 06 00 08 = MOV [0800],AX. وCC = HLT.','M0500=8A2E00068A1E00078AC58AE389060008CC'],
+['Run it: TTY, GO, 500, TTY. AX becomes 9C25 and 0800-0801 hold 25 9C.','شغّله: TTY ثم GO ثم 500 ثم TTY. يصبح AX = 9C25 وتحمل الخانتان 0800-0801 القيمتين 25 9C.','r:AX','TTY, GO, 5, 0, 0, TTY.','TTY ثم GO ثم 5 ثم 0 ثم 0 ثم TTY.','AX=9C25&M0800=259C']]},
+{k:'q',t:['Final test','الاختبار النهائي'],q:[
+['D=1 means the data goes to the register REG.','عندما D=1 تذهب البيانات إلى المسجل REG.',true],
+['W=0 means the data is a word (16-bit).','القيمة W=0 تعني أن البيانات كلمة (16 بت).',false,'W=0 means a byte (8-bit). W=1 means a word.','القيمة W=0 تعني بايت (8 بت)، أما W=1 فتعني كلمة.'],
+['MOD=11 means R/M is a register.','القيمة MOD=11 تعني أن R/M مسجّل.',true],
+['MOD=01 means a 16-bit displacement.','القيمة MOD=01 تعني إزاحة 16 بت.',false,'MOD=01 is an 8-bit displacement. MOD=10 is 16-bit.','القيمة MOD=01 هي إزاحة 8 بت، أما MOD=10 فهي 16 بت.'],
+['The machine code 8B EC is MOV BP,SP.','الكود الآلي 8B EC هو MOV BP,SP.',true],
+['MOD=00 with R/M=110 means [BP].','القيمة MOD=00 مع R/M=110 تعني [BP].',false,'It means a direct address: a 16-bit address follows.','هي تعني عنواناً مباشراً: يليها عنوان من 16 بت.']]}
+]};
+/* Level 3 Arabic: every Latin/number run is wrapped in directional isolates so mixed Arabic/English text reads in the right order */
+(function(){const R=/[A-Za-z0-9](?:[A-Za-z0-9\-\/+=,\[\] ]*[A-Za-z0-9\]])?/g,w=x=>typeof x=='string'?x.replace(R,'\u2066$&\u2069'):x;
+LV[3].forEach(m=>{m.t[1]=w(m.t[1]);(m.s||[]).forEach(t=>{t[1]=w(t[1]);if(m.k=='x'&&t[4])t[4]=w(t[4])});(m.q||[]).forEach(q=>{q[1]=w(q[1]);if(q[4])q[4]=w(q[4])})})})();
+/* Final tests of levels 1 and 2: 6 questions each, mostly practical / programming (machine code, memory order, running a program) */
+(function(){const R=/[A-Za-z0-9](?:[A-Za-z0-9\-\/+=,\[\] ]*[A-Za-z0-9\]])?/g,w=x=>typeof x=='string'?x.replace(R,'\u2066$&\u2069'):x,
+add=(n,A,keep)=>{const q=LV[n].find(m=>m.k=='q').q;A.forEach(r=>{r[1]=w(r[1]);if(r[4])r[4]=w(r[4]);q.push(r)});const k=keep.map(i=>q[i]);q.splice(0,q.length,...k)};
+add(1,[
+["To store a program at 400: press EB, type 400, NEXT, then type each byte followed by NEXT.","لتخزين برنامج عند 400: اضغط EB واكتب 400 ثم NEXT، ثم اكتب كل بايت متبوعاً بـ NEXT.",true],
+["The program B4 6C CC ends with AL = 6C.","البرنامج B4 6C CC ينتهي وقيمة AL تساوي 6C.",false,"B4 is MOV AH, so 6C goes into AH, not AL.","الأمر B4 هو MOV AH، فتذهب القيمة 6C إلى AH وليس AL."],
+["To run the program stored at 400: press GO, type 400, then TTY.","لتشغيل البرنامج المخزّن عند 400: اضغط GO واكتب 400 ثم TTY.",true],
+["If AX = DFA1, then AL = DF and AH = A1.","إذا كان AX = DFA1 فإن AL = DF وAH = A1.",false,"AH is the high byte: AH = DF and AL = A1.","AH هو البايت العلوي: AH = DF وAL = A1."]
+],[1,2,3,4,5,6]);
+add(2,[
+["MOV DL,8C is written in machine code as B2 8C.","التعليمة MOV DL,8C كودها الآلي B2 8C.",true],
+["The code BB 3E 94 loads BX with 943E.","الكود BB 3E 94 يحمّل BX بالقيمة 943E.",true],
+["After DL = 8C and DH = AF, the register DX = 8CAF.","بعد أن يصبح DL = 8C وDH = AF يكون المسجل DX = 8CAF.",false,"DH is the high byte, so DX = AF8C.","DH هو البايت العلوي، فيكون DX = AF8C."],
+["To reach BX press ER, then key 1.","للوصول إلى BX اضغط ER ثم المفتاح 1.",true],
+["In the code 89 1E 50 06 the address is 5006.","في الكود 89 1E 50 06 يكون العنوان هو 5006.",false,"The address is stored low byte first: 50 06 means 0650.","العنوان يُخزَّن بالبايت الأدنى أولاً: 50 06 تعني 0650."]
+],[3,1,4,5,6,7]);
+})();
+/* Final tests: assembly instructions (MOV AX,CX / MOV DL,8C / MOV AH ...) are shown as code chips, like in the examples and exercises */
+(function(){const I=/MOV(?: [A-Z]{2}| \[[0-9A-F]{2,4}\])(?:,(?:[A-Z]{2}|\[[0-9A-F]{2,4}\]|[0-9A-F]{2,4}))?/g,c=x=>typeof x=='string'?x.replace(I,'\u0002$&\u0003'):x;
+Object.keys(LV).forEach(n=>LV[n].forEach(m=>(m.q||[]).forEach(q=>{[0,1,3,4].forEach(i=>{q[i]=c(q[i])})})))})();
+function tkQi(ok){return '<svg class="ic qk" viewBox="0 0 24 24" aria-hidden="true">'+(ok?'<path d="M5.5 12.8l4.3 4.3L18.5 7.6"/>':'<path d="M7 7l10 10M17 7L7 17"/>')+'</svg>'}
+function tkQz(p,a){const q=p.it.k=='q',n=g('tkn'),f=g('tkp');f.innerHTML=tkQi(0);f.title=a?'خطأ':'False';f.setAttribute('aria-label',f.title);if(q){n.innerHTML=tkQi(1);n.title=a?'صح':'True'}else{n.textContent=a?'\u2039':'\u203A';n.title=a?'التالي':'Next'}n.setAttribute('aria-label',n.title)}
+function tkCk(){return '<svg class="ic ck" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><path d="M19 33l9 9 17-19"/></svg>'}
 function tmI(a){const L=LV[TV],kn={c:a?'مفهوم':'Concept',e:a?'مثال':'Example',x:a?'تمرين':'Exercise',q:a?'اختبار':'Test'};
- return '<button type=button class=lb>'+(a?'\u203A ':'\u2039 ')+(a?'المستوى ':'Level ')+TV+'</button>'+(L?L.map((m,i)=>'<button type=button class="lv li kd-'+m.k+(DN[TV+'.'+i]?' dn':'')+'" data-i='+i+'><span class=n>'+(i+1)+'</span><span class=tx><b>'+m.t[+a]+'</b><i>'+kn[m.k]+'</i></span><span class=st>\u25B6</span></button>').join(''):'<p class=tmz>'+(a?'المحتوى قريباً':'Coming soon')+'</p>')}
+ return '<button type=button class=lb>'+(a?'\u203A ':'\u2039 ')+(a?'المستوى ':'Level ')+TV+'</button>'+(L?L.map((m,i)=>'<button type=button class="lv li kd-'+m.k+(DN[TV+'.'+i]?' dn':'')+'" data-i='+i+'><span class=n>'+(i+1)+'</span><span class=tx><b>'+m.t[+a]+'</b><i>'+kn[m.k]+'</i></span><span class=st>'+(DN[TV+'.'+i]?tkCk():'\u25B6')+'</span></button>').join(''):'<p class=tmz>'+(a?'المحتوى قريباً':'Coming soon')+'</p>')}
 function tmAp(){document.querySelectorAll('.tkhl').forEach(e=>e.classList.remove('tkhl'));void document.body.offsetWidth;const m={EB:0,ER:1,GO:2,ST:3,EW:7,TTY:'.'};HLT.forEach(t=>{const e=t=='dh'?[...g('dsp').children].slice(4,6):t=='dl'?[...g('dsp').children].slice(6,8):t=='DSP'?[g('dsp')]:t=='FKEYS'?[...document.querySelectorAll('#keys .b')]:t.startsWith('r:')?[[...g('regs').children].find(x=>x.textContent.trim().split(' ')[0]==t.slice(2))]:[document.querySelector('#keys [data-k="'+(t in m?m[t]:/^[0-9A-F]$/.test(t)?parseInt(t,16):t)+'"]')];e.forEach(x=>x&&x.classList.add('tkhl'))})}
 function tmHL(a){HLT=a;tmAp()}
 new MutationObserver(tmAp).observe(g('regs'),{childList:true});
-function tmEnd(){PL=0;tmW=0;HLT=[];tmAp();tmWg();g('tmw').classList.remove('ls','hx','cv','fin','xd','qz');g('tkn').classList.remove('tkg')}
-const SQ={'1.4.4':'RESET ER 0','1.4.7':'1 2 3 4 NEXT','1.4.8':'TTY','1.5.1':'RESET','1.5.2':'EB 4 0 0','1.5.3':'NEXT','1.5.4':'B 8 NEXT','1.5.5':'B B NEXT A A NEXT','1.5.6':'C C NEXT','1.5.7':'RESET GO 4 0 0','1.5.8':'TTY','1.6.1':'EB 6 0 0 NEXT','1.6.2':'B 0 NEXT 4 5 NEXT C C NEXT','1.6.3':'RESET GO 6 0 0','1.6.4':'TTY','1.7.1':'EB 5 0 0 NEXT B 4 NEXT','1.7.2':'6 C NEXT C C NEXT','1.7.3':'RESET GO 5 0 0 TTY','2.3.1':'EB 5 0 0 NEXT','2.3.2':'A B NEXT 7 D NEXT','2.3.3':'RESET EB 7 0 0','2.3.4':'NEXT 8 B NEXT 0 E NEXT 0 0 NEXT 0 5 NEXT 8 B NEXT C 1 NEXT C C NEXT','2.3.5':'RESET GO 7 0 0 TTY','2.4.1':'EB 6 0 0 NEXT A F NEXT','2.4.2':'RESET EB 8 0 0 NEXT B 2 NEXT 8 C NEXT','2.4.3':'8 A NEXT 3 6 NEXT 0 0 NEXT 0 6 NEXT','2.4.4':'8 B NEXT C 2 NEXT C C NEXT','2.4.5':'RESET GO 8 0 0 TTY','2.5.1':'EB 4 0 0 NEXT B B NEXT 3 E NEXT 9 4 NEXT','2.5.2':'8 9 NEXT 1 E NEXT 5 0 NEXT 0 6 NEXT C C NEXT','2.5.3':'RESET GO 4 0 0 TTY','2.5.4':'EB 6 5 0 NEXT'};
+function tmEnd(){PL=0;tmW=0;HLT=[];tmAp();tmWg();g('tmw').classList.remove('ls','hx','cv','fin','xd','qz','qn');g('tkn').classList.remove('tkg')}
+const SQ={'1.4.1':'RESET ER 0','1.4.4':'1 2 3 4 NEXT','1.4.5':'TTY','1.5.1':'RESET','1.5.2':'EB 4 0 0','1.5.3':'NEXT','1.5.4':'B 8 NEXT','1.5.5':'B B NEXT A A NEXT','1.5.6':'C C NEXT','1.5.7':'TTY GO 4 0 0','1.5.8':'TTY','1.6.1':'EB 6 0 0 NEXT','1.6.2':'B 0 NEXT 4 5 NEXT C C NEXT','1.6.3':'TTY GO 6 0 0','1.6.4':'TTY','1.7.1':'EB 5 0 0 NEXT B 4 NEXT','1.7.2':'6 C NEXT C C NEXT','1.7.3':'TTY GO 5 0 0 TTY','2.3.1':'EB 5 0 0 NEXT','2.3.2':'A B NEXT 7 D NEXT','2.3.3':'RESET EB 7 0 0','2.3.4':'NEXT 8 B NEXT 0 E NEXT 0 0 NEXT 0 5 NEXT 8 B NEXT C 1 NEXT C C NEXT','2.3.5':'TTY GO 7 0 0 TTY','2.4.1':'EB 6 0 0 NEXT A F NEXT','2.4.2':'RESET EB 8 0 0 NEXT B 2 NEXT 8 C NEXT','2.4.3':'8 A NEXT 3 6 NEXT 0 0 NEXT 0 6 NEXT','2.4.4':'8 B NEXT C 2 NEXT C C NEXT','2.4.5':'TTY GO 8 0 0 TTY','2.5.1':'EB 4 0 0 NEXT B B NEXT 3 E NEXT 9 4 NEXT','2.5.2':'8 9 NEXT 1 E NEXT 5 0 NEXT 0 6 NEXT C C NEXT','2.5.3':'TTY GO 4 0 0 TTY','2.5.4':'EB 6 5 0 NEXT','3.6.6':'RESET EB 6 0 0 NEXT','3.6.7':'8 B NEXT E C NEXT C C NEXT','3.6.8':'TTY GO 6 0 0 TTY'};
+/* Levels 1-2: extra step after storing a value in a register: check it with ER + the register key (0 AX, 1 BX, 2 CX, 3 DX), then TTY to leave */
+(function(){const R=/[A-Za-z0-9](?:[A-Za-z0-9\-\/+=,\[\] ]*[A-Za-z0-9\]])?/g,w=x=>x.replace(R,'\u2066$&\u2069'),
+X=h=>['Check AX: press ER, then 0 (AX). The display shows '+h+'. Then press TTY to leave.',w('تحقق من AX: اضغط ER ثم 0 (AX) فتظهر القيمة '+h+'. ثم اضغط TTY للخروج.'),'r:AX','Press ER, then key 0 (AX), then TTY.',w('اضغط ER ثم المفتاح 0 (AX) ثم TTY.'),'AX='+h+'&V=0'];
+const e1=LV[1][5].s,e2=LV[1][6].s,e3=LV[1][7].s;
+e1.push(['Step 9: check AX: press ER, then 0 (AX). The data display shows AABB. Then press TTY to leave.',w('9) تحقق من AX: اضغط ER ثم 0 (AX) فتظهر القيمة AABB. ثم اضغط TTY للخروج.'),'r:AX']);SQ['1.5.9']='ER 0 TTY';
+e2.push(['Step 5: check AX: press ER, then 0 (AX). The two right digits are AL = 45. Then press TTY.',w('5) تحقق من AX: اضغط ER ثم 0 (AX) فتكون الخانتان على اليمين AL = 45. ثم اضغط TTY للخروج.'),'r:AX']);SQ['1.6.5']='ER 0 TTY';
+e3.push(['Step 4: check AX: press ER, then 0 (AX). The two left digits are AH = 6C. Then press TTY.',w('4) تحقق من AX: اضغط ER ثم 0 (AX) فتكون الخانتان على اليسار AH = 6C. ثم اضغط TTY للخروج.'),'r:AX']);SQ['1.7.4']='ER 0 TTY';
+LV[1][8].s.splice(1,0,X('DFA1'));LV[1][8].s.push(X('869B'));LV[1][9].s.push(X('8F7B'));
+LV[2][3].s.splice(6,0,['Step 6: check CX: press ER, then 2 (CX). Then press TTY, ER, and 0 (AX). Both show 7DAB.',w('6) تحقق من CX: اضغط ER ثم 2 (CX). ثم اضغط TTY ثم ER ثم 0 (AX). كلاهما يعرض 7DAB.'),'r:CX r:AX']);SQ['2.3.6']='ER 2 TTY ER 0 TTY';
+LV[2][4].s.push(['Step 6: check DX: press ER, then 3 (DX). Then press TTY, ER, and 0 (AX). Both show AF8C.',w('6) تحقق من DX: اضغط ER ثم 3 (DX). ثم اضغط TTY ثم ER ثم 0 (AX). كلاهما يعرض AF8C.'),'r:DX r:AX']);SQ['2.4.6']='ER 3 TTY ER 0 TTY';
+const e5=LV[2][5].s;e5.splice(4,0,['Step 4: check BX: press ER, then 1 (BX). The display shows 943E. Then press TTY to leave.',w('4) تحقق من BX: اضغط ER ثم 1 (BX) فتظهر القيمة 943E. ثم اضغط TTY للخروج.'),'r:BX']);
+e5[5][0]=e5[5][0].replace('Step 4:','Step 5:');e5[5][1]=e5[5][1].replace('4)','5)');SQ['2.5.5']=SQ['2.5.4'];SQ['2.5.4']='ER 1 TTY';
+LV[2][6].s.push(X('3C5A'))})();
+/* Lab-sheet material added to Levels 1-2 (Experiment 1 and 2 manuals) */
+(function(){const R=/[A-Za-z0-9](?:[A-Za-z0-9\-\/+=,:\[\] ]*[A-Za-z0-9\]])?/g,w=x=>x.replace(R,'\u2066$&\u2069'),S=(e,a,t)=>[e,w(a),t||''];
+LV[1][0].s.unshift(S('Objective: get to know the 8086-01 trainer kit, its parts, its memory and basic assembly programming on it.','الهدف: التعرّف على كيت التدريب 8086-01 ومكوناته وذاكرته وأساسيات البرمجة بلغة التجميع عليه.'));
+LV[1][1].s.push(S('VCT/INTR gives a non-maskable interrupt (NMI) for testing and debugging. INS/+ inserts bytes into memory without overwriting. DEL deletes bytes and shifts the rest up.','VCT/INTR يولّد مقاطعة غير قابلة للحجب (NMI) لاختبار البرامج وتصحيحها. وINS/+ يدرج بايتات في الذاكرة دون الكتابة فوق البيانات. وDEL يحذف بايتات ويزيح الباقي للأعلى.','FKEYS'),
+S('REG examines or modifies the CPU registers. TTY switches to the TTY interface for serial communication with a PC terminal. FILL fills a memory block with data, and PRV goes back to the previous address.','REG لفحص مسجلات المعالج أو تعديلها. وTTY يحوّل الكيت إلى واجهة TTY للاتصال التسلسلي مع حاسوب. وFILL يملأ كتلة من الذاكرة ببيانات، وPRV يرجع إلى العنوان السابق.','FKEYS')
+);
+LV[1][2].s.push(S('The important monitor commands are EB, EW, ER, IB/IW, OB/OW, MV, GO and ST: examine byte, examine word, examine register, input byte/word, output byte/word, move, go and step.','أوامر المراقب المهمة هي EB وEW وER وIB/IW وOB/OW وMV وGO وST، ومعناها: فحص بايت، فحص كلمة، فحص مسجّل، إدخال بايت أو كلمة، إخراج بايت أو كلمة، نقل، تشغيل، خطوة.','EB EW ER GO ST 4 5 6 8 9'),
+S('The command keys are the number keys: 0 EB, 1 ER, 2 GO, 3 ST, 4 IB, 5 OB, 6 MV, 7 EW, 8 IW, 9 OW.','مفاتيح الأوامر هي مفاتيح الأرقام: 0 هو EB و1 هو ER و2 هو GO و3 هو ST و4 هو IB و5 هو OB و6 هو MV و7 هو EW و8 هو IW و9 هو OW.','0 1 2 3 4 5 6 7 8 9')
+);
+LV[1][3].s.push(S('The kit RAM is 32K made of 62256 chips: EVEN-RAM covers 00000 to 0FFFE and ODD-RAM covers 00001 to 0FFFF.','ذاكرة RAM في الكيت 32K من شرائح 62256: الذاكرة الزوجية EVEN-RAM من 00000 إلى 0FFFE، والفردية ODD-RAM من 00001 إلى 0FFFF.'),
+S('Memory map (Fig. 4): the vector interrupt area starts at 00000 and the user RAM area at 00400. System RAM is 00F00 to 00FFF (FE00:2F00 to 2FFF), and user RAM continues at FE00:3000 to 5FFF.','خريطة الذاكرة (الشكل 4): منطقة متجهات المقاطعة تبدأ من 00000 ومنطقة ذاكرة المستخدم من 00400. وذاكرة النظام من 00F00 إلى 00FFF (أي FE00:2F00 إلى 2FFF)، وتستمر ذاكرة المستخدم من FE00:3000 إلى 5FFF.')
+);
+LV[2][1].s.push(S('In the manual, the display letters of the registers are: AX is A, BX is B, CX is C, DX is D, then SP, bp, SI, dl, CS, dS, SS, ES, IP and FL.','حسب الدليل، حروف عرض المسجلات هي: AX يظهر A وBX يظهر B وCX يظهر C وDX يظهر D، ثم SP وbp وSI وdl وCS وdS وSS وES وIP وFL.','DSP'));
+LV[2][0].s.unshift(S('Objective: investigate the general-purpose registers of the 8086.','الهدف: دراسة المسجلات العامة في المعالج 8086.','r:AX r:BX r:CX r:DX'),
+S('The 8086 works with 8-bit and 16-bit data, so it has 16-bit registers: general-purpose and special-purpose ones.','يتعامل المعالج 8086 مع بيانات 8 بت و16 بت، لذلك زُوّد بمسجلات 16 بت، منها مسجلات للأغراض العامة ومسجلات للأغراض الخاصة.'));
+})();
+/* Full lab-sheet questions: every example opens with its complete question (not only the goal), every exercise starts with its complete question */
+(function(){const R=/[A-Za-z0-9\[](?:[A-Za-z0-9\-\/+=,:\[\] ]*[A-Za-z0-9\]])?/g,w=x=>x.replace(R,'\u2066$&\u2069'),
+Q=(a,b)=>[a.replace(/^\n/,''),w(b.replace(/^\n/,''))],
+E=(l,i,a,b)=>{const s=LV[l][i].s[0],q=Q(a,b);s[0]=q[0];s[1]=q[1]},
+X=(l,i,a,b)=>{const q=Q(a,b);LV[l][i].s.unshift([q[0],q[1],''])};
+/* Level 1 (Experiment 1) */
+E(1,5,"Use the 86-01 kit to enter the number (AABBH) in the Accumulator (Register AX) and display the result in seven segment display. Please start your program from address 00400H.","استخدم الكيت 86-01 لإدخال الرقم (AABBH) في المجمّع (المسجل AX) وعرض النتيجة على الشاشة السباعية. ابدأ برنامجك من العنوان 00400H.");
+E(1,6,"Write a program from address 600H to move the 8-bit data 45H to the Accumulator (AL).","اكتب برنامجاً ابتداءً من العنوان 600H لنقل البيانات 45H (8 بت) إلى المجمّع (المسجل AL).");
+E(1,7,"Repeat the above program with the following 8-bit number 6CH by moving this data to the Accumulator (AH). Please start your program from 500H.","كرّر البرنامج السابق مع العدد 6CH (8 بت) بنقل هذه البيانات إلى المجمّع (المسجل AH). ابدأ برنامجك من العنوان 500H.");
+X(1,8,"Repeat the above procedure with the following numbers data:\n• Enter DFA1H in AX\n• Enter 869BH in AX","كرّر الإجراء السابق مع البيانات التالية:\n• أدخل DFA1H في AX\n• أدخل 869BH في AX");
+X(1,9,"\n• Load the value 7BH into AL and observe the result on the seven-segment display.\n• Load the value 8FH into AH and observe the result on the seven-segment display.\n• Record your observations in the result table.","\n• ضع القيمة 7BH في AL ولاحظ النتيجة على الشاشة السباعية.\n• ضع القيمة 8FH في AH ولاحظ النتيجة على الشاشة السباعية.\n• سجّل ملاحظاتك في جدول النتائج.");
+/* Level 2 (Experiment 2) */
+E(2,3,"Write a program to move the content of memory location (00500H-00501H) to Register CX. Then, display the result on seven segment display. Please start your program from address 00700H.\nData: AB at 500, 7D at 501.","اكتب برنامجاً لنقل محتوى موقع الذاكرة (00500H-00501H) إلى المسجل CX، ثم اعرض النتيجة على الشاشة السباعية. ابدأ برنامجك من العنوان 00700H.\nالبيانات: AB عند 500 و7D عند 501.");
+E(2,4,"Load the data 8CH in register DL, and the content of memory location [00600H] to DH. Then check the content of DX register. Please let the content of memory address 00600H = AFH and start your program from 00800H.","حمّل البيانات 8CH في المسجل DL، وحمّل محتوى موقع الذاكرة [00600H] في المسجل DH. ثم افحص محتوى المسجل DX. اجعل محتوى العنوان 00600H يساوي AFH وابدأ برنامجك من العنوان 00800H.");
+E(2,5,"Write a program starting at memory address 00400H to load the data 943EH into register BX. Then, move the content of register BX to memory location 0650H.","اكتب برنامجاً يبدأ من عنوان الذاكرة 00400H لتحميل البيانات 943EH في المسجل BX، ثم انقل محتوى المسجل BX إلى موقع الذاكرة 0650H.");
+E(2,6,"Write a program that puts 5AH in DL and 3CH in DH, then copies the content of DX to AX. AX should show 3C5A.","اكتب برنامجاً يضع القيمة 5AH في DL والقيمة 3CH في DH، ثم ينسخ محتوى DX إلى AX. يجب أن يعرض AX القيمة 3C5A.");
+/* Level 3 (Experiment 3). Exercises show only the question line: their values, instructions and program lines appear one step at a time */
+E(3,6,"Interpret the machine code 8B EC.","فسّر الكود الآلي 8B EC.");
+E(3,7,"Choose the MOD bits for each of the following instructions, then write its machine code:\n• MOV AL,[DI]\n• MOV AL,[DI+02H]\n• MOV AL,[DI+1000H]\nNote: in all of them R/M=101 means DI.","اختر قيمة MOD لكل تعليمة من التعليمات التالية، ثم اكتب كودها الآلي:\n• MOV AL,[DI]\n• MOV AL,[DI+02H]\n• MOV AL,[DI+1000H]\nملاحظة: في الثلاث تعني R/M=101 المسجل DI.");
+E(3,8,"Write the machine code of the instruction MOV CX,[BX+DI+20H].","اكتب الكود الآلي للتعليمة MOV CX,[BX+DI+20H].");
+X(3,9,"Given the following hexadecimal values, write the instruction of each value:","اكتب التعليمة التي تمثلها كل قيمة من القيم السداسية التالية:");
+X(3,10,"Write the code of the following instructions:","اكتب الكود الآلي للتعليمات التالية:");
+X(3,11,"The following program is used to move the content of memory location 700H to register BL and display the result in seven segments display.\nMOV BL,[0700]\nMOV AL,BL\nHLT\nPlease write the full code of this program.\nHint: your program should be started from memory location 00800H.","يُستخدم البرنامج التالي لنقل محتوى موقع الذاكرة 700H إلى المسجل BL وعرض النتيجة على الشاشة السباعية.\nMOV BL,[0700]\nMOV AL,BL\nHLT\nاكتب الكود الكامل لهذا البرنامج.\nتلميح: ابدأ برنامجك من موقع الذاكرة 00800H.");
+X(3,12,"Explain what the function of the following program is, and write the code and execute it on the Lab Kit. Please write your code from 500H.","اشرح وظيفة البرنامج التالي، ثم اكتب كوده ونفّذه على الكيت. اكتب برنامجك ابتداءً من العنوان 500H.");
+})();
 function tmKv(t){const m={EB:0,ER:1,GO:2,ST:3,EW:7,TTY:'.'};return String(t in m?m[t]:/^[0-9A-F]$/.test(t)?parseInt(t,16):t)}
-function tmKp(v){const p=PL;if(!p||v==null)return;p.kp=1;if(p.ck)setTimeout(()=>tmGc(p),150);if(!p.sq||tmKv(p.sq[p.n])!==String(v))return;p.n++;const i0=p.i;if(p.n<p.sq.length)tmHL(p.rs.concat(p.sq[p.n]));else{tmHL(p.rs);p.sd=1;p.dd[p.i]=1;tmUl(p);if(p.i<p.it.s.length-1)setTimeout(()=>{if(PL===p&&p.i===i0&&p.i<p.it.s.length-1){p.i++;tmSt()}},450);else tmChk(p)}}
+function tmKp(v){const p=PL;if(!p||v==null)return;p.kp=1;if(p.ck)setTimeout(()=>tmGc(p),150);
+if(!p.sq||tmKv(p.sq[p.n])!==String(v))return;p.n++;const i0=p.i;if(p.n<p.sq.length)tmHL(p.rs.concat(p.sq[p.n]));else{tmHL(p.rs);p.sd=1;p.dd[p.i]=1;tmUl(p);if(p.i<p.it.s.length-1)setTimeout(()=>{if(PL===p&&p.i===i0&&p.i<p.it.s.length-1){p.i++;tmSt()}},450);else tmChk(p)}}
 g('keys').addEventListener('click',e=>{const b=e.target.closest('button');if(b)tmKp(b.dataset.k)});
 document.addEventListener('keydown',e=>{if(/^(TEXTAREA|INPUT)$/.test(e.target.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;const c=e.key;tmKp(/^[0-9a-f]$/i.test(c)?String(parseInt(c,16)):{Enter:'NEXT',Backspace:'BS','-':'PRV','.':'.',Escape:'RESET',g:'2',G:'2',Insert:'INS','+':'INS',Delete:'DEL',v:'VCT',V:'VCT',F1:'F1',F2:'F2',F3:'F3'}[c])});
-function tmP(it,lv){tmW=0;tmWg();PL={it:it,i:0,ok:0,lk:0,dd:{},lv:lv==null?TV:lv};g('tmw').classList.add('ls');(LG=='ar'&&PL.lv==1&&it.k=='c'&&it.t[0]=='Registers'?tmLn():tmSt());g('tmw').scrollIntoView({behavior:'smooth',block:'center'})}
-/* Registers concept in Arabic: suggest English first (exact names), with an optional direct switch */
+function tmP(it,lv){tmW=0;tmWg();PL={it:it,i:0,ok:0,lk:0,dd:{},lv:lv==null?TV:lv};g('tmw').classList.add('ls');tmSt();g('tmw').scrollIntoView({behavior:'smooth',block:'center'})}
 function tkLn(on){const d=g('tkln');if(d)d.classList.toggle('on',!!on);g('tmw').classList.toggle('ln',!!on)}
-function tmLn(){const p=PL;p.ln=1;g('tmw').classList.remove('fin','hx','xd','qz');tmHL([]);
- tmSay('يُنصح باستخدام اللغة الإنجليزية لدقة الأسماء والفهم.\nهل تريد التحويل الآن؟');
- g('tkln').innerHTML='<button type=button id=tkle>'+IT+'English</button><button type=button id=tklk>متابعة بالعربية</button>';tkLn(1);
- g('tkc').textContent='';g('tkb').textContent='\u203A';g('tkn').textContent='\u2039';g('tkb').disabled=true;g('tkhint').disabled=true;g('tkn').disabled=false;g('tkn').classList.remove('tkg');
- g('tkle').onclick=()=>{if(PL!==p||!p.ln)return;p.ln=0;tkLn(0);g('tlg').click()};
- g('tklk').onclick=()=>{if(PL!==p||!p.ln)return;tmSt()}}
-function tmSt(){tkLn(0);PL.ln=0;const a=LG=='ar'?1:0,p=PL,q=p.it.k=='q',z=q?p.it.q:p.it.s,s=z[p.i],L=LV[p.lv],j=L.indexOf(p.it),nx=!q&&!!L[j+1],ls=p.i==z.length-1;
- if(p.ls!==p.i){p.ls=p.i;p.n=0;p.dn=0;p.h=0;p.as=0;p.kp=0;p.sd=!!p.dd[p.i]}
+function tmSt(){tkLn(0);PL.ln=0;g('tmw').classList.toggle('qn',!!PL.nx);tkNq(PL);const a=LG=='ar'?1:0,p=PL,q=p.it.k=='q',z=q?p.it.q:p.it.s,s=z[p.i],L=LV[p.lv],j=L.indexOf(p.it),nx=!q&&!!L[j+1],ls=p.i==z.length-1;
+ if(p.ls!==p.i){p.ls=p.i;p.n=0;p.dn=0;p.h=0;p.as=p.lv==3?1:0;p.kp=0;p.sd=!!p.dd[p.i]}
  g('tmw').classList.remove('fin');
- const hn=p.it.k=='x'?(s[3+a]||''):'',hb=g('tkhint'),m=p.it.k=='x'&&/^(\w+)=([0-9A-F]+)$/i.exec(s[5]||'');p.ck=m?[m[1].toUpperCase(),parseInt(m[2],16),m[2].toUpperCase()]:0;
+ const kk=g('tkk'),kl=({c:a?'مفهوم':'Concept',e:a?'مثال':'Example',x:a?'تمرين':'Exercise',q:a?'اختبار':'Test'})[p.it.k]||'';kk.dataset.k=p.it.k;kk.dataset.l=kl;kk.textContent=kl;
+ const hn=p.it.k=='x'?(s[3+a]||''):'',hb=g('tkhint');p.ck=p.it.k=='x'?tmPk(s[5]):0;
  g('tmw').classList.toggle('hx',p.it.k=='x');hb.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 18.5h5M10.3 21.5h3.4"/><path class="bf" d="M12 2.8a6.2 6.2 0 0 0-3.7 11.2c.7.6 1.2 1.3 1.2 2.2v.3h5v-.3c0-.9.5-1.6 1.2-2.2A6.2 6.2 0 0 0 12 2.8z"/></svg>'+(a?'تلميح':'Hint');hb.disabled=true;
- const cvx=p.it.k=='e'&&s[a].indexOf('\u27E6')>=0;g('tmw').classList.toggle('cv',cvx);g('tmt').classList.toggle('as',!!p.as);g('tkcv').disabled=true;tmCv(p);tmSay(mc(p.h&&hn?s[a]+'\n'+hn:s[a],p.as),()=>{tmChk(p);if(PL===p){hb.disabled=!hn||!!p.h||!!p.sd;g('tkcv').disabled=false}});
- const tk=q?[]:(s[2]||'').split(' ').filter(Boolean),sq=(p.it.k=='e'||p.it.k=='c')?SQ[p.lv+'.'+j+'.'+p.i]:0;p.sq=sq?sq.split(' '):0;p.rs=tk.filter(t=>t.startsWith('r:'));tmHL(sq?p.rs.concat(p.n<p.sq.length?[p.sq[p.n]]:[]):tk);g('tkc').textContent=(p.i+1)+'/'+z.length;
- g('tmw').classList.toggle('qz',q);g('tkp').textContent='\u2717';g('tkn').textContent=q?'\u2713':(a?'\u2039':'\u203A');g('tkp').disabled=false;const kb=g('tkb');kb.textContent=a?'\u203A':'\u2039';kb.disabled=p.i==0;kb.title=a?'خطوة للخلف':'Back one step';kb.setAttribute('aria-label',kb.title);tmUl(p);if(p.it.k!='x')g('tkn').classList.toggle('tkg',!!(p.dn&&ls&&nx))}
+ const cvx=p.it.k=='e'&&s[a].indexOf('\u27E6')>=0;g('tmw').classList.toggle('cv',cvx);g('tmt').classList.toggle('as',!!p.as);g('tkcv').disabled=true;tmCv(p);tmSay(mc(p.h&&hn?s[a]+'\u0001'+hn:s[a],p.as),()=>{tmChk(p);if(PL===p){hb.disabled=!hn||!!p.h||!!p.sd;g('tkcv').disabled=false}});
+ const tk=q?[]:(s[2]||'').split(' ').filter(Boolean),sq=(p.it.k=='e'||p.it.k=='c')?SQ[p.lv+'.'+j+'.'+p.i]:0;p.sq=sq?sq.split(' '):0;p.rs=tk.filter(t=>t.startsWith('r:'));tmHL(sq?p.rs.concat(p.n<p.sq.length?[p.sq[p.n]]:[]):(p.it.k=='x'&&p.lv==3)?p.rs:tk);g('tkc').textContent=(p.i+1)+'/'+z.length;
+ g('tmw').classList.toggle('qz',q);tkQz(p,a);g('tkp').disabled=false;const kb=g('tkb');kb.textContent=a?'\u203A':'\u2039';kb.disabled=p.i==0;kb.title=a?'خطوة للخلف':'Back one step';kb.setAttribute('aria-label',kb.title);tmUl(p);if(p.it.k!='x')g('tkn').classList.toggle('tkg',!!(p.dn&&ls&&nx))}
 /* next stays locked while the step's required action (key sequence / exercise result) is not done */
 function tmUl(p){if(PL!==p)return;tmGo(p);const q=p.it.k=='q',L=LV[p.lv],ls=p.i==(q?p.it.q:p.it.s).length-1,nx=!!L[L.indexOf(p.it)+1];g('tkn').disabled=!q&&(((p.sq||p.ck)&&!p.sd)||(ls&&!nx))}
-/* exercise check: after a key press, look at the kit's registers for the requested result */
-function tmGc(p){if(!p||PL!==p||!p.ck||p.sd||!p.kp)return;const c=p.ck,k=RN.indexOf(c[0]);if(k<0||rget(k)!==c[1])return;p.sd=1;p.dd[p.i]=1;g('tkhint').disabled=true;tmUl(p);const a=LG=='ar'?1:0,ls=p.i==p.it.s.length-1;tmSay((a?'صحيح! ':'Correct! ')+c[0]+' = '+c[2]+'.',()=>tmChk(p))}
+/* exercise check: after a key press, look at the kit for the requested result.
+   Spec = conditions joined by "&": "AX=DFA1" (16-bit register), "AL=6E" (8-bit register),
+   "M0600=8BC3" (RAM bytes starting at that address, in memory order) */
+const R8=['AL','CL','DL','BL','AH','CH','DH','BH'];
+function tmPk(x){if(!x)return 0;const o=[];for(const c of x.split('&')){const m=/^(\w+)=([0-9A-F]+)$/i.exec(c);if(!m)return 0;const n=m[1].toUpperCase(),h=m[2].toUpperCase();
+ if(/^M[0-9A-F]+$/.test(n)){if(h.length%2)return 0;o.push({n:n,a:parseInt(n.slice(1),16),v:h.match(/../g).map(b=>parseInt(b,16)),h:h})}
+ else if(n=='V')o.push({n:'V',r:parseInt(h,16),h:h});
+ else if(RN.indexOf(n)>=0||R8.indexOf(n)>=0)o.push({n:n,v:parseInt(h,16),h:h});else return 0}
+ return o.length?o:0}
+function tmOk(c){if(c.n=='V')return st=='regv'&&ri===c.r;if(Array.isArray(c.v))return c.v.every((b,i)=>M[c.a+i]===b);const k=RN.indexOf(c.n);return k>=0?rget(k)===c.v:gb(R8.indexOf(c.n))===c.v}
+function tmGc(p){if(!p||PL!==p||!p.ck||p.sd||!p.kp||!p.ck.every(tmOk))return;p.sd=1;p.dd[p.i]=1;g('tkhint').disabled=true;tmUl(p);const a=LG=='ar'?1:0;
+ tmSay((a?'صحيح! ':'Correct! ')+p.ck.filter(c=>c.n!='V').map(c=>Array.isArray(c.v)?(a?'الذاكرة ':'RAM ')+hx(c.a,4)+': '+c.h.match(/../g).join(' '):c.n+' = '+c.h).join(', ')+'.',()=>tmChk(p))}
 new MutationObserver(()=>tmGc(PL)).observe(g('regs'),{childList:true});
 /* exercise hint: appears only when the button is pressed */
-g('tkhint').onclick=()=>{const p=PL;if(!p||p.it.k!='x'||p.h||tmTy)return;const a=LG=='ar'?1:0,s=p.it.s[p.i],h=s[3+a];if(!h)return;p.h=1;tmSn('h');g('tkhint').disabled=true;tmSay(s[a]+'\n'+h,null,Array.from(s[a]).length)};
+g('tkhint').onclick=()=>{const p=PL;if(!p||p.it.k!='x'||p.h||tmTy)return;const a=LG=='ar'?1:0,s=p.it.s[p.i],h=s[3+a];if(!h)return;p.h=1;tmSn('h');g('tkhint').disabled=true;tmSay(s[a]+'\u0001'+h,null,Array.from(s[a]).length)};
 /* end of a concept / example: tiny check animation, orange in the list, next button glows */
 function tmChk(p){if(PL!==p||p.dn||tmTy||p.it.k=='q'||p.i!=p.it.s.length-1||(p.sq&&p.n<p.sq.length)||(p.ck&&!p.sd))return;tmDone(p)}
 function tmDone(p){p.dn=1;const k=p.it.k,L=LV[p.lv],j=L.indexOf(p.it);if(L[j+1]&&k!='x')g('tkn').classList.add('tkg');
  if(k=='c'||k=='e'){const d=g('tkd');d.classList.remove('go');void d.offsetWidth;d.classList.add('go')}
  const y=p.lv+'.'+j;if(!DN[y]){DN[y]=1;LS('m86d',JSON.stringify(DN));tmX()}}
-function tmA(v){const p=PL,a=LG=='ar'?1:0,q=p.it.q[p.i],r=q[2],ok=r===v,x=q[3+a]||'',m=(ok?(a?'صحيح!':'Correct!'):(a?'ليس تماماً. الإجابة: '+(r?'صح':'خطأ'):'Not quite. The answer is '+(r?'True':'False')+'.'))+(x?(a&&!ok?'. ':' ')+x:'');p.lk=1;if(ok)p.ok++;tmSay(m);
+/* test answers: bright rising chime when correct, soft gentle two-note "oops" when wrong (never harsh) */
+function tmAz(ok){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,n=(f,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(f,t+s);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.015);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};
+ if(ok){[[523,0],[659,.09],[784,.18],[1047,.27]].forEach(([f,s])=>{n(f,s,.3,'sine',.07);n(f*2,s,.16,'sine',.018)})}
+ else{n(392,0,.22,'triangle',.09);n(330,.16,.3,'triangle',.08);n(330*2,.16,.2,'sine',.02)}}catch(e){}}
+function tmA(v){const p=PL,a=LG=='ar'?1:0,q=p.it.q[p.i],r=q[2],ok=r===v,x=q[3+a]||'',m=(ok?(a?'صحيح!':'Correct!'):(a?'ليس تماماً. الإجابة: '+(r?'صح':'خطأ'):'Not quite. The answer is '+(r?'True':'False')+'.'))+(x?(a&&!ok?'. ':' ')+x:'');p.lk=1;if(ok)p.ok++;tmAz(ok);tmSay(m);
+ if(!ok){p.nx=1;g('tmw').classList.add('qn');tkNq(p);return}
  setTimeout(()=>{if(PL!==p)return;p.lk=0;if(++p.i<p.it.q.length)tmSt();else tmPass(p)},Math.max(1800,Array.from(m).length*32+900)+(p.i==p.it.q.length-1?2200:0))}
+function tkNq(p){const b=g('tkq'),a=LG=='ar',l=p.it.k=='q'&&p.i==p.it.q.length-1;b.textContent=l?(a?'إنهاء':'Finish'):(a?'التالي \u2039':'Next \u203A');b.title=b.textContent;b.setAttribute('aria-label',b.textContent)}
+g('tkq').onclick=()=>{const p=PL;if(!p||!p.nx)return;p.nx=0;p.lk=0;g('tmw').classList.remove('qn');tmSn('n');if(++p.i<p.it.q.length)tmSt();else tmPass(p)};
 function tmPass(p){const a=LG=='ar'?1:0,n=TV;DN[p.lv+'.'+LV[p.lv].indexOf(p.it)]=1;LS('m86d',JSON.stringify(DN));TO=Math.max(TO,n+1);LS('m86p',TO);thZ(true);tmEnd();TV=0;tmSay(a?'أحسنت! نتيجتك '+p.ok+'/'+p.it.q.length+'. أنهيت المستوى '+n+' وفُتح المستوى التالي.':'Well done! Score '+p.ok+'/'+p.it.q.length+'. Level '+n+' done, next level unlocked.');g('tmw').classList.add('fin');tmX()}
 /* Levels button: opens the level list so a new level can be chosen */
 g('tklv').onclick=e=>{e.stopPropagation();g('tmw').classList.remove('fin');TV=0;tmW=1;tmX();mo(true)};
@@ -857,14 +1104,14 @@ g('tkp').onclick=()=>{const p=PL;if(!p||p.lk)return;if(p.it.k=='q')return tmA(fa
 g('tkb').onclick=()=>{const p=PL;if(!p||p.lk||p.it.k=='q')return;if(p.i>0){tmSn('b');p.i--;tmSt()}};
 g('tkn').onclick=()=>{const p=PL;if(!p||p.lk)return;if(p.ln)return tmSt();if(p.it.k=='q')return tmA(true);if(p.i<p.it.s.length-1){tmSn('n');p.i++;tmSt()}else{const L=LV[p.lv],n=L[L.indexOf(p.it)+1];if(n){tmSn('n');tmP(n,p.lv)}}};
 /* examples: machine code only; the button between back and next converts it to Assembly. Sounds: back / next / convert / hint */
-function mc(s,as){return s.replace(/\u27E6([^\u27E7|]*)\|([^\u27E7]*)\u27E7/g,(m,x,y)=>as?y:x)}
-function tmCv(p){const b=g('tkcv'),a=LG=='ar';if(b)b.textContent='\u21C4 '+(p&&p.as?(a?'إلى M Code':'To M Code'):(a?'إلى Assembly':'To Assembly'))}
+function mc(s,as){return s.replace(/\u27E6([^\u27E7|]*)\|([^\u27E7]*)\u27E7/g,(m,x,y)=>'\u0002'+(as?y:x)+'\u0003')}
+function tmCv(p){const b=g('tkcv'),a=LG=='ar';if(b)b.innerHTML='\u21C4 '+(p&&p.as?(a?'إلى ':'To ')+'<span class=cvl>Machine Code</span><span class=cvs>M Code</span>':(a?'إلى Assembly':'To Assembly'))}
 function tmSn(k){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,P={n:[[520,780,0,.11,'triangle',.07]],b:[[780,520,0,.11,'triangle',.07]],c:[[440,440,0,.05,'square',.03],[660,660,.06,.05,'square',.03],[880,880,.12,.06,'square',.03],[1320,1320,.19,.12,'sine',.06]],h:[[988,988,0,.35,'sine',.08],[1319,1319,.12,.5,'sine',.07]]}[k];P.forEach(([a,b,s,d,ty,vl])=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(a,t+s);if(a!=b)o.frequency.exponentialRampToValueAtTime(b,t+s+d);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.01);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)})}catch(e){}}
-g('tkcv').onclick=()=>{const p=PL;if(!p||p.lk||tmTy||p.it.k!='e')return;const s=p.it.s[p.i][LG=='ar'?1:0];if(s.indexOf('\u27E6')<0)return;p.as=p.as?0:1;tmSn('c');const t=g('tmt');t.textContent=mc(s,p.as);t.classList.toggle('as',!!p.as);tmCv(p)};
+g('tkcv').onclick=()=>{const p=PL;if(!p||p.lk||tmTy||p.it.k!='e')return;const s=p.it.s[p.i][LG=='ar'?1:0];if(s.indexOf('\u27E6')<0)return;p.as=p.as?0:1;tmSn('c');const t=g('tmt');tmRn(t,tmLs(mc(s,p.as)));t.classList.toggle('as',!!p.as);tmCv(p)};
 g('tmv').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;tmW=0;tmWg();if(b.classList.contains('lb')){TV=0;setTimeout(tmX,0)}else if(b.classList.contains('li')){mo(false);tmP(LV[TV][+b.dataset.i])}else{TV=+b.dataset.n;setTimeout(tmX,0)}};
 function thZ(day){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,n=(f,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.value=f;v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.015);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};
  (day?[784,988,1319,1568]:[587,466,349,262]).forEach((f,i)=>{n(f,i*.075,.35,day?'sine':'triangle',day?.06:.07);if(day)n(f*2,i*.075,.18,'sine',.02)})}catch(e){}}
-function lgZ(){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,ar=LG=='ar',n=(a,b,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(a,t+s);o.frequency.exponentialRampToValueAtTime(b,t+s+d);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.02);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};
+function lgZ(l){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,ar=(l||LG)=='ar',n=(a,b,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(a,t+s);o.frequency.exponentialRampToValueAtTime(b,t+s+d);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.02);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};
  if(ar){n(1100,300,0,.32,'triangle',.05);[784,587].forEach((f,i)=>n(f,f,.16+i*.1,.28,'sine',.07))}else{n(300,1100,0,.32,'triangle',.05);[587,784].forEach((f,i)=>n(f,f,.16+i*.1,.28,'sine',.07))}}catch(e){}}
 function tmZ(up){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,n=(a,b,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(a,t+s);o.frequency.exponentialRampToValueAtTime(b,t+s+d);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.03);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};
  up?n(200,900,0,.55,'triangle',.06):n(900,200,0,.55,'triangle',.06);(up?[659,880,1319]:[1319,880,523]).forEach((q,i)=>n(q,q,.5+i*.12,.32,'sine',.07))}catch(e){}}
@@ -875,6 +1122,8 @@ function tmK(){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAu
 /* power button: short power-down / power-up sound */
 function pwZ(){if(!sn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t=ac.currentTime,n=(a,b,s,d,ty,vl)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=ty;o.frequency.setValueAtTime(a,t+s);o.frequency.exponentialRampToValueAtTime(b,t+s+d);v.gain.setValueAtTime(.0001,t+s);v.gain.linearRampToValueAtTime(vl,t+s+.01);v.gain.exponentialRampToValueAtTime(.0001,t+s+d);o.connect(v);v.connect(ac.destination);o.start(t+s);o.stop(t+s+d+.02)};n(900,120,0,.28,'sawtooth',.04);n(300,700,.3,.16,'triangle',.06);n(700,1100,.4,.14,'sine',.05)}catch(e){}}
 g('pwr').addEventListener('click',pwZ);
+/* Training Mode: Power also leaves the current lesson and returns to the main screen, where TKE Bot asks to pick a level */
+g('pwr').addEventListener('click',()=>{if(!TM)return;tmEnd();tkLn(0);TV=0;const d=g('tkd');d.classList.remove('go');g('tmw').classList.remove('ls','qz','qn','hx','cv','fin','xd');mo(false);tmX();tmG();scrollTo({top:0,behavior:'smooth'})});
 mn.addEventListener('click',tmK);g('tklv').addEventListener('click',tmK);
 g('tmv').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled)tmK()});
 tmS();
