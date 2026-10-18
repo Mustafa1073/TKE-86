@@ -664,7 +664,7 @@ LS=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem
 const th=v=>{D.dataset.theme=v;LS('m86t',v)},fz=v=>{v=Math.max(80,Math.min(160,+v||100));D.style.setProperty('--fz',v/100);g('tfr').value=v;LS('m86f',v);tl()};
 let LG='en';th(LS('m86t')=='light'?'light':'dark');
 var tmW=0;const tb=g('tb'),mp=g('tmp'),mn=g('tmn'),mo=o=>{mp.hidden=!o;mn.setAttribute('aria-expanded',o);tmWg()};
-mn.onclick=e=>{e.stopPropagation();mo(mp.hidden)};document.addEventListener('click',e=>{if(!tb.contains(e.target))mo(false)});
+mn.onclick=e=>{e.stopPropagation();mo(mp.hidden)};document.addEventListener('click',e=>{if(e.target.isConnected&&!tb.contains(e.target))mo(false)});
 g('tth').onclick=()=>{const d=D.dataset.theme!='light';th(d?'light':'dark');thZ(d)};
 g('tfz').onclick=()=>{g('tfw').hidden=!g('tfw').hidden};g('tfr').oninput=e=>fz(e.target.value);
 g('tlg').onclick=()=>lgFx();

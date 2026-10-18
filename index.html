@@ -1343,6 +1343,13 @@ html.tbs #tbl[hidden]{display:none}
 [data-theme=light] #tbl .tbp[data-p=alg]{--hc:#b45309}
 html[lang=ar] #tbl .tbp[data-p=alg]{direction:rtl;text-align:right}
 
+/* Final test: Skip sits at the far end of the board header (far right in English, far left in Arabic), small; the page counter makes room */
+#tmw.qz .tmk{position:static}
+#tmw.qz .tmh{padding-inline-end:76px}
+html #tmw.ls.qz:not(.qn) .tmk #tks{position:absolute;z-index:4;top:4px;inset-inline-end:12px;height:20px!important;min-width:0;padding:0 10px;border-radius:99px;font-size:10.5px;line-height:1}
+html.ar #tmw.ls.qz:not(.qn) .tmk #tks{font-size:11px}
+/* Levels menu: the Unlock-all button (and its confirm box) sits above Level 1 */
+#tmv .ua0,#tmv .ua{order:-1}
 </style>
 <script src="script.js"></script>
 </body></html>
