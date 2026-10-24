@@ -1,4 +1,4 @@
-const V='m86-v18';
+const V='m86-v19';
 const CORE=['./','index.html','styles.css','script.js','manifest.webmanifest','splash/splash-title.svg',
 'icons/favicon.ico','icons/favicon-16.png','icons/favicon-32.png',
 'icons/apple-touch-icon.png','icons/apple-touch-icon-120.png','icons/apple-touch-icon-152.png','icons/apple-touch-icon-167.png','icons/apple-touch-icon-180.png',
