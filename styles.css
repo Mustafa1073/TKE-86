@@ -239,3 +239,102 @@ html:root:root:root:root:root .card.asm>.dc>.ab.at>#asmo{flex-basis:32px}
 /*! item-type badge (Concept / Example / Common mistake ...): never covers the text. It stays inside the TKE Bot column and wraps onto two lines when it is wider than that, in English and Arabic */
 .tkk,html .tkk.wn,html.ar .tkk.wn{translate:-50% 0;width:max-content;max-width:100%;box-sizing:border-box;white-space:normal;text-align:center;line-height:1.2;padding:3px 8px;overflow-wrap:normal}
 .tkk.wn::before{margin-inline-end:4px}
+
+/* 80186-only instructions (INS/OUTS family) in the instruction hint */#xh:not([hidden]) .x186{display:block;margin:0 0 7px;padding:7px 10px;border:1px solid #a855f7;border-inline-start-width:4px;border-radius:9px;background:rgba(168,85,247,.16);line-height:1.5}#xh:not([hidden]) .x186 strong{display:inline;font:800 12px system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;color:#d8b4fe}#xh:not([hidden]) .x186t{display:inline-block;margin-inline-end:7px;padding:0 7px;border-radius:999px;background:#a855f7;color:#fff;font:800 11px var(--mono);direction:ltr;unicode-bidi:isolate}#xh:not([hidden]) .x186d{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--fg2,#9ca3af)}html[data-theme=light] #xh:not([hidden]) .x186{background:rgba(147,51,234,.10);border-color:#9333ea}html[data-theme=light] #xh:not([hidden]) .x186 strong{color:#6b21a8}html[data-theme=light] #xh:not([hidden]) .x186t{background:#9333ea}
+
+/* Arabic: the instruction hint reads right-to-left so 'الـFlags: ...' shows in the right order */html[lang=ar] #xh{direction:rtl}
+
+/* instruction hint: the instruction name sits on its own line, separate from the explanation */#xh:not([hidden]) b{display:block;margin:0 0 4px}html[lang=ar] #xh:not([hidden]) b{text-align:right}
+
+/* 80186 badge v2: collapsible, chip-style logo; animation only on normal/powerful devices (not .lite) */
+#xh:not([hidden]) .x186{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(192,38,211,.12))}
+#xh:not([hidden]) .x186t{position:relative;overflow:hidden;padding:1px 9px;border:1px solid #e9d5ff;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;letter-spacing:.6px;text-shadow:0 1px 0 rgba(0,0,0,.25);box-shadow:-3px 0 0 -1px #c084fc,3px 0 0 -1px #c084fc,0 0 10px rgba(168,85,247,.55)}
+#xh:not([hidden]) .x186t::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-130%)}
+#xh:not([hidden]) .x186a{display:inline-block;margin-inline-start:8px;font-size:11px;color:#d8b4fe}
+#xh:not([hidden]) .x186.c .x186d{display:none}
+#xh:not([hidden]) .x186.c .x186a{transform:rotate(-90deg)}
+html[lang=ar] #xh:not([hidden]) .x186.c .x186a{transform:rotate(90deg)}
+html[data-theme=light] #xh:not([hidden]) .x186{background:linear-gradient(135deg,rgba(147,51,234,.14),rgba(192,38,211,.07))}
+html[data-theme=light] #xh:not([hidden]) .x186t{background:linear-gradient(135deg,#6d28d9,#a21caf);border-color:#d8b4fe}
+html[data-theme=light] #xh:not([hidden]) .x186a{color:#7e22ce}
+@keyframes x186sw{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@keyframes x186gl{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0)}50%{box-shadow:0 0 12px 1px rgba(168,85,247,.38)}}
+@keyframes x186in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+html:not(.lite) #xh:not([hidden]) .x186{animation:x186in .28s ease-out,x186gl 3.2s ease-in-out .3s infinite}
+html:not(.lite) #xh:not([hidden]) .x186t::before{animation:x186sw 2.8s ease-in-out infinite}
+html:not(.lite) #xh:not([hidden]) .x186a{transition:transform .22s ease}
+@media (prefers-reduced-motion:reduce){html:not(.lite) #xh:not([hidden]) .x186,html:not(.lite) #xh:not([hidden]) .x186t::before{animation:none}}
+
+/* 80186 badge: logo separated from the text */
+#xh:not([hidden]) .x186{display:flex;flex-wrap:wrap;align-items:center;gap:5px 14px}
+#xh:not([hidden]) .x186t{flex:none;margin:0 2px}
+#xh:not([hidden]) .x186 strong{flex:1 1 0;min-width:0}
+#xh:not([hidden]) .x186a{flex:none;margin:0}
+#xh:not([hidden]) .x186d{flex:0 0 100%;margin-top:0}
+
+/* status pill in Arabic: right-to-left, no letter-spacing (it breaks Arabic letter joining) */html[lang=ar] #asst{direction:rtl;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;font-size:11.5px}
+
+/* Examples menu: right-to-left in Arabic; purple icon for the 80186 category */
+html[lang=ar] #exm{direction:rtl}
+html[lang=ar] #exm .it .go{transform:scaleX(-1)}
+#exm .it.ct .ic.p6{color:#c084fc;background:rgba(168,85,247,.16);border-color:rgba(168,85,247,.55)}
+html[data-theme=light] #exm .it.ct .ic.p6{color:#7e22ce;background:rgba(147,51,234,.10);border-color:rgba(147,51,234,.45)}
+
+/* Level 5 tables: MUL / DIV / F6-F7 tabs show only in level 5; HEX and STEPS hide there */
+html:not(.tb5) #tbl .tbt button[data-t=mul],html:not(.tb5) #tbl .tbt button[data-t=div],html:not(.tb5) #tbl .tbt button[data-t=grp]{display:none}
+html.tb5 #tbl .tbt button[data-t=hex],html.tb5 #tbl .tbt button[data-t=alg]{display:none}
+#tbl .tbt button[data-t=mul]{--tc:#34d399;--tb:#34d39944}
+#tbl .tbt button[data-t=div]{--tc:#38bdf8;--tb:#38bdf844}
+#tbl .tbt button[data-t=grp]{--tc:#fbbf24;--tb:#fbbf2444}
+#tbl .tbp[data-p=mul]{--hc:#34d399;--hb:#34d39955}
+#tbl .tbp[data-p=div]{--hc:#38bdf8;--hb:#38bdf855}
+#tbl .tbp[data-p=grp]{--hc:#fbbf24;--hb:#fbbf2455}
+#tbl .tbp[data-p=mul] td:nth-child(3),#tbl .tbp[data-p=div] td:nth-child(n+4){font-weight:700}
+
+/* What's new: grouped boxes */
+#nw .nwl{display:grid;gap:12px}
+#nw .nwg{border:1px solid var(--bd-ui);border-radius:14px;background:var(--cd2);padding:10px 12px 12px}
+#nw h3{margin:0 0 8px;font:800 14px/1.3 system-ui,sans-serif;color:var(--accent-text,var(--accent))}
+/* Assembly editor: Instructions button (idle hint only) + list */
+#xw{position:relative}
+#xib{display:none}
+#xh[hidden]+#xib{display:inline-flex;align-items:center;position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);appearance:none;cursor:pointer;padding:6px 12px;border-radius:9px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--fg);font:700 12px/1.2 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;-webkit-tap-highlight-color:transparent}
+html[data-view=asm] #xh[hidden]{padding-inline-end:104px}
+#xil{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;padding:18px;background:#0009;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+#xil[hidden]{display:none}
+#xil [hidden]{display:none!important}
+#xil .xic{width:min(100%,460px);max-height:82vh;overflow:auto;box-sizing:border-box;border-radius:18px;border:1px solid var(--bd-ui);background:var(--cd);color:var(--fg);box-shadow:0 20px 50px #000a;padding:0 14px 14px}
+#xil .xih{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:8px;margin:0 -14px 10px;padding:12px 14px;background:var(--cd)}
+#xil .xit{flex:1;font:800 18px/1.3 system-ui,sans-serif}
+#xil .xix,#xil .xibk{appearance:none;cursor:pointer;height:34px;min-width:34px;box-sizing:border-box;border-radius:17px;border:1px solid var(--bd-ui);background:var(--cd2);color:var(--fg);font:700 13px system-ui,sans-serif;padding:0 12px}
+#xil .xix{width:34px;padding:0;font:400 20px/1 system-ui,sans-serif}
+#xil .xig{display:flex;flex-wrap:wrap;gap:7px}
+#xil .xin{appearance:none;cursor:pointer;padding:6px 11px;border-radius:9px;border:1px solid var(--bd-ui);background:var(--cd2);color:var(--fg);font:700 12px var(--mono);direction:ltr}
+#xil .xid{font:500 13px/1.6 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+#xil .xid b{display:block;margin:0 0 6px;font:800 14px var(--mono);color:var(--accent-text,#fb923c);direction:ltr;unicode-bidi:isolate}
+html[lang=ar] #xil .xid b{text-align:right}
+#xil .xid small{display:block;margin-top:6px;color:var(--fg2,#9ca3af);font-size:12px}
+#xil .xid em{font-style:normal;font-weight:800;color:#ffb020}
+#xil .x186{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin:0 0 9px;padding:8px 10px;border:1px solid #a855f7;border-inline-start-width:4px;border-radius:9px;background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(192,38,211,.12));cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+#xil .x186t{flex:none;padding:1px 9px;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;font:800 11px var(--mono);direction:ltr;unicode-bidi:isolate}
+#xil .x186 strong{flex:1 1 0;min-width:0;font:800 12px system-ui,sans-serif;color:#d8b4fe}
+#xil .x186a{flex:none;font-size:11px;color:#d8b4fe}
+#xil .x186d{flex:0 0 100%;font-size:11px;font-weight:500;color:var(--fg2,#9ca3af)}
+#xil .x186.c .x186d{display:none}
+#xil .x186.c .x186a{transform:rotate(-90deg)}
+html[lang=ar] #xil .x186.c .x186a{transform:rotate(90deg)}
+html[data-theme=light] #xil .x186 strong,html[data-theme=light] #xil .x186a{color:#6b21a8}
+
+/* Arabic: the Instructions button sits on the left, opposite the right-aligned text */
+html[lang=ar] #xw{direction:rtl}
+/* Instructions list: categories */
+#xil .xig{display:block}
+#xil .xgt{margin:12px 0 7px;font:800 12px/1.3 system-ui,sans-serif;color:var(--accent-text,#fb923c)}
+#xil .xgt:first-child{margin-top:2px}
+#xil .xgl{display:flex;flex-wrap:wrap;gap:7px}
+#xil .xgt.p6{color:#d8b4fe}
+html[data-theme=light] #xil .xgt.p6{color:#6b21a8}
+#xil .xin.p6{border-color:#a855f7;background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(192,38,211,.12))}
+/* X mark at the start of every "Common mistake" sentence in TKE Bot */
+.mkx{display:inline-grid;place-items:center;flex:none;width:15px;height:15px;margin-inline-end:6px;border-radius:50%;background:#ef4444;color:#fff;font:800 9px/1 system-ui,sans-serif;font-style:normal;vertical-align:1px}
+[data-theme=light] .mkx{background:#dc2626}
