@@ -338,3 +338,92 @@ html[data-theme=light] #xil .xgt.p6{color:#6b21a8}
 /* X mark at the start of every "Common mistake" sentence in TKE Bot */
 .mkx{display:inline-grid;place-items:center;flex:none;width:15px;height:15px;margin-inline-end:6px;border-radius:50%;background:#ef4444;color:#fff;font:800 9px/1 system-ui,sans-serif;font-style:normal;vertical-align:1px}
 [data-theme=light] .mkx{background:#dc2626}
+
+/* Instructions list: 4 equal rectangles per row */
+html #xil .xgl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+html #xil .xgl .xin{box-sizing:border-box;width:100%;min-width:0;height:36px;padding:0 2px;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;font-size:12px}
+@media(max-width:380px){html #xil .xgl{gap:5px}html #xil .xgl .xin{font-size:11px;letter-spacing:-.2px}}
+/* Registers header: small two-press reset button next to the +/- mark */
+.gd summary.rgs::after{margin-left:0;margin-right:0;margin-inline-start:10px}
+.gd summary.rgs #rgr{margin-inline-start:auto;flex:none;appearance:none;cursor:pointer;height:26px;min-height:0;padding:0 9px;border-radius:8px;border:1px solid var(--bd-ui);background:transparent;color:inherit;font:700 11px/1 var(--mono);white-space:nowrap;opacity:.85;direction:ltr}
+.gd summary.rgs #rgr:hover{opacity:1}
+.gd summary.rgs #rgr.arm{background:#ff3b30;color:#fff;border-color:#ff3b30;opacity:1}
+/* Arabic (rtl): the +/- mark is at the far left of every card; the reset button sits right next to it */
+html[lang=ar] .gd summary::after{margin-left:0;margin-right:auto}
+html[lang=ar] .gd summary.rgs::after{margin-left:0;margin-right:10px}
+html[lang=ar] .gd summary.rgs #rgr{margin-left:0;margin-right:auto}
+
+/* Live error strip under the editor */
+#alv{margin:8px 4px 0;padding:7px 10px;border:1px solid #ff5a4d80;border-left:3px solid #ff5a4d;border-radius:8px;background:#ff3b3014;font:12px/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+#alv[hidden]{display:none}
+#alv .e{cursor:pointer;font-weight:700}
+#alv .hn{cursor:pointer;color:#ffb020;unicode-bidi:plaintext}
+#alv .mr{opacity:.7}
+
+/* Inline operand hint */
+#gh{position:absolute;overflow:hidden;pointer-events:none;white-space:pre;z-index:2}
+#gh[hidden]{display:none}
+#gh span:last-child{opacity:.4}
+
+/* What's new: version headings */
+#nw .nwv{margin:16px 0 4px;font:800 13px var(--mono);color:var(--accent-text,#fb923c)}
+#nw .nwv:first-child{margin-top:0}
+
+/* Training: progress summary on top of the levels list */
+#tmv .tpr{margin:0 0 10px;padding:11px 12px 10px;border:1px solid var(--bd-ui);border-radius:14px;background:var(--cd2);display:grid;gap:8px}
+#tmv .tph{display:flex;align-items:center;justify-content:space-between;gap:8px;font:12.5px/1.3 system-ui,sans-serif}
+#tmv .tph span{opacity:.8}
+#tmv .tpb{height:9px;border-radius:99px;background:color-mix(in srgb,var(--fg) 12%,transparent);overflow:hidden}
+#tmv .tpb i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .5s ease}
+#tmv .tps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;text-align:center}
+#tmv .tps span{display:grid;gap:1px;align-content:start;font:10.5px/1.25 system-ui,sans-serif;opacity:.9}
+#tmv .tps b{font:800 15px/1.2 var(--mono);color:var(--fg)}
+#tmv .tpr small{font:10.5px/1.4 system-ui,sans-serif;opacity:.65}
+/* Training: review of mistakes after a test */
+#tkrv{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;padding:18px;background:#0009;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+#tkrv[hidden]{display:none}
+#tkrv .rvc{width:min(100%,440px);max-height:84vh;overflow:auto;box-sizing:border-box;border-radius:18px;border:1px solid var(--bd-ui);background:var(--cd);color:var(--fg);box-shadow:0 20px 50px #000a;padding:16px 16px 14px;display:grid;gap:10px}
+#tkrv h2{margin:0;display:flex;align-items:center;justify-content:space-between;gap:8px;font:800 17px/1.3 system-ui,sans-serif}
+#tkrv .rvx{appearance:none;cursor:pointer;width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--bd-ui);background:var(--cd2);color:var(--fg);font:400 20px/1 system-ui,sans-serif}
+#tkrv .rvp{margin:0;font:13px/1.5 system-ui,sans-serif;opacity:.8}
+#tkrv .rvl{display:grid;gap:9px}
+#tkrv .rvq{display:grid;gap:5px;padding:10px 12px;border:1px solid var(--bd-ui);border-inline-start:4px solid var(--accent);border-radius:12px;background:var(--cd2);font:13.5px/1.5 system-ui,sans-serif}
+#tkrv .rvq b{font-weight:700;unicode-bidi:plaintext}
+#tkrv .rva{font-weight:800;color:var(--accent-text,var(--accent));unicode-bidi:plaintext}
+#tkrv .rvx2{opacity:.85;font-size:12.5px;unicode-bidi:plaintext}
+#tkrv .rvb{display:flex;gap:8px;position:sticky;bottom:0}
+#tkrv .rvb button{appearance:none;cursor:pointer;flex:1;height:40px;border-radius:11px;border:1px solid var(--bd-ui);background:var(--cd2);color:var(--fg);font:700 13.5px system-ui,sans-serif}
+#tkrv .rvb .rvr{background:var(--accent);border-color:var(--accent);color:#1a0d00}
+
+/* (...) menu: share link */
+#ash::before{content:"\2197"}
+html:root:root:root:root #asmm #ash{grid-column:1/-1}
+#tmv .lv .tx small{display:block;margin-top:2px;font:10.5px/1.3 system-ui,sans-serif;opacity:.7}
+#tmv .lvi{margin:0 0 8px;padding:0 4px;font:11.5px/1.3 system-ui,sans-serif;opacity:.8;text-align:center}
+#tmv .lvb{display:block;height:4px;border-radius:99px;background:color-mix(in srgb,var(--fg) 12%,transparent);overflow:hidden;margin-top:6px}
+#tmv .lvb i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .5s ease}
+#tmv .tpt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:0;border:0;background:none;color:inherit;font:12.5px/1.3 system-ui,sans-serif;text-align:start;cursor:pointer}
+#tmv .tpt b{font-weight:800;font-size:13.5px;color:var(--accent-text,var(--accent))}
+#tmv .tpc{display:grid;place-items:center;opacity:.7;transition:transform .35s cubic-bezier(.4,0,.2,1)}
+#tmv .tpc .ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#tmv .tpr.open .tpc{transform:rotate(180deg)}
+#tmv .tpw{display:grid;grid-template-rows:0fr;margin-top:-8px;transition:grid-template-rows .35s cubic-bezier(.4,0,.2,1)}
+#tmv .tpr.open .tpw{grid-template-rows:1fr}
+#tmv .tpx{display:grid;gap:8px;min-height:0;overflow:hidden;padding-top:8px;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .25s ease,transform .35s cubic-bezier(.4,0,.2,1),visibility 0s .35s}
+#tmv .tpr.open .tpx{opacity:1;visibility:visible;transform:none;transition:opacity .3s ease .05s,transform .35s cubic-bezier(.4,0,.2,1),visibility 0s}
+@media (prefers-reduced-motion:reduce){#tmv .tpw,#tmv .tpx,#tmv .tpc{transition:none}}
+#tmv .tpx .lv.ua0{padding:5px 10px;gap:8px;border-radius:10px;font-size:12px}
+#tmv .tpx .ua0 .n{width:22px;height:22px;font-size:13px}
+#tmv .tpx .ua0 .tx i{font-size:10px}
+#tmv .tpx .ua{margin:0;padding:7px 10px;font-size:12px}
+#tmv .tpx .ua0,#tmv .tpx .ua{order:0}
+#tmv .ua0 .n .ic{width:15px;height:15px;margin:0;vertical-align:middle}
+#tmv .ua0 .n .ic .lf{fill:currentColor;stroke:none}
+/* menus (levels/tools, assembly ..., examples, text size): short fade+slide on open and close; skipped in lite mode and with reduced motion */
+html:not(.lite) :is(#tmp,#asmm,#exm,#tfw){transform-origin:top center;transition:opacity .16s ease,transform .18s cubic-bezier(.2,.8,.2,1),display .18s allow-discrete}
+html:not(.lite) :is(#tmp,#asmm,#exm,#tfw)[hidden]{opacity:0;transform:translateY(-6px) scale(.97)}
+@starting-style{html:not(.lite) :is(#tmp,#asmm,#exm,#tfw){opacity:0;transform:translateY(-6px) scale(.97)}}
+@media (prefers-reduced-motion:reduce){html:not(.lite) :is(#tmp,#asmm,#exm,#tfw){transition:none}}
+
+/*! Home intro: the name TKE 8086 at the start, with T K E 86 in orange */
+#home .hpn{display:block;font-weight:800;margin-bottom:2px}#home .hpn i{font-style:normal;color:#ff7a1a}html[data-theme=light] #home .hpn i{color:#ea580c}
